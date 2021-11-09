@@ -5,27 +5,27 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginEnd="30dp"
+        android:id="@+id/icMenu1"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginEnd="20dp"
         android:layout_weight="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@drawable/ic_not_selected_view" />
 
     <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:id="@+id/icMenu2"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:layout_weight="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@drawable/ic_selected_view" />
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginStart="30dp"
+        android:id="@+id/icMenu3"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="20dp"
         android:layout_weight="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@drawable/ic_not_selected_view" />
