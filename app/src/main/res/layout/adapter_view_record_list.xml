@@ -8,19 +8,6 @@
     android:visibility="visible">
 
     <TextView
-        android:id="@+id/tvRecordTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
-        android:maxLength="25"
-        android:text="오늘의 감정기록"
-        android:textColor="#000000"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/cbEditRecord"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:id="@+id/tvRecordDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,6 +20,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cbEditRecord"
         app:layout_constraintTop_toBottomOf="@+id/tvRecordTitle" />
+
+    <TextView
+        android:id="@+id/tvRecordTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:maxLength="25"
+        android:text="오늘의 감정기록"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/cbEditRecord"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <CheckBox
         android:id="@+id/cbEditRecord"

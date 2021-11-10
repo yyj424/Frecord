@@ -1,6 +1,7 @@
 package com.yyj.frecord
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,6 +33,10 @@ class RecordActivity : Fragment() {
         initList()
         if (rdList.size > 0) {
             tvExplain.visibility = View.INVISIBLE
+        }
+        btnAddRecord.setOnClickListener {
+            val intent = Intent(ctx, AddRecordActivity::class.java)
+            startActivity(intent)
         }
     }
 
