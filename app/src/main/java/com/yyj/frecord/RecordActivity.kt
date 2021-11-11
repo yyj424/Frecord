@@ -31,8 +31,10 @@ class RecordActivity : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initList()
+        val sharedPref = ctx.getSharedPreferences("user", Context.MODE_PRIVATE)
+        tvUserName.text = sharedPref.getString("name", null)
         if (rdList.size > 0) {
-            tvExplain.visibility = View.INVISIBLE
+            llExplain.visibility = View.INVISIBLE
         }
         btnAddRecord.setOnClickListener {
             val intent = Intent(ctx, AddRecordActivity::class.java)
@@ -50,16 +52,6 @@ class RecordActivity : Fragment() {
         recordListAdapter = RecordListAdapter(ctx, rdList, false)
         recordListAdapter.setItemClickListener(itemCheckListener)
         rvRecord.adapter = recordListAdapter
-
-        rdList.add(RecordData(1,"오늘의 감정기록1", System.currentTimeMillis(), 0, false))
-        rdList.add(RecordData(1,"오늘의 감정기록2", System.currentTimeMillis(), 0, false))
-        rdList.add(RecordData(1,"오늘의 감정기록3", System.currentTimeMillis(), 0, false))
-        rdList.add(RecordData(1,"오늘의 감정기록4", System.currentTimeMillis(), 0, false))
-        rdList.add(RecordData(1,"오늘의 감정기록5", System.currentTimeMillis(), 0, false))
-        rdList.add(RecordData(1,"오늘의 감정기록6", System.currentTimeMillis(), 0, false))
-        rdList.add(RecordData(1,"오늘의 감정기록7", System.currentTimeMillis(), 0, false))
-        rdList.add(RecordData(1,"오늘의 감정기록8", System.currentTimeMillis(), 0, false))
-        rdList.add(RecordData(1,"오늘의 감정기록9", System.currentTimeMillis(), 0, false))
 
         recordListAdapter.notifyDataSetChanged()
     }
