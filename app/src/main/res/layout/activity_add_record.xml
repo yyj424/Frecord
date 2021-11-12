@@ -22,6 +22,7 @@
 
         <EditText
             android:id="@+id/etRecord"
+            style="@style/EditTextStyle"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="18dp"
