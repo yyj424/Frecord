@@ -27,6 +27,7 @@
         <activity android:name=".MainActivity"/>
         <activity android:name=".AddRecordActivity"/>
         <activity android:name=".AddMessageActivity"/>
+        <activity android:name=".ViewMessageActivity"/>
     </application>
 
 </manifest>

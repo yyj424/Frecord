@@ -10,16 +10,16 @@ import androidx.core.app.NotificationManagerCompat
 
 class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val title = intent.getStringExtra("title")
-        val id = intent.getStringExtra("channelId")
+        val msgId = intent.getStringExtra("msgId")
+        val channelId = intent.getStringExtra("channelId")
 
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, ViewMessageActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }//임시 intent
+        }
+        intent.putExtra("msgId", msgId)
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
-        Log.d("yyjLog", "con: " + context + ",,,id: " + id)
-        var builder = NotificationCompat.Builder(context, id!!)
+        var builder = NotificationCompat.Builder(context, channelId!!)
             .setSmallIcon(R.drawable.ic_selected_view) // temporal icon
             .setContentTitle("My notification")
             .setContentText("Much longer text that cannot fit one line...")
@@ -34,7 +34,6 @@ class AlarmReceiver: BroadcastReceiver() {
         with(NotificationManagerCompat.from(context)) {
             // notificationId is a unique int for each notification that you must define
             notify(100, builder.build())
-            Log.d("yyjLog", "notify")
         }
     }
 }

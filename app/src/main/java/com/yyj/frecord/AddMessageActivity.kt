@@ -16,16 +16,23 @@ import java.util.*
 
 
 class AddMessageActivity : AppCompatActivity() {
-    private val CHANNEL_ID = "msg"
+    private val channelId = "msg"
     private lateinit var dialog : AlertDialog
     private lateinit var intent : PendingIntent
     private val alarmCalendar = Calendar.getInstance()
+    private lateinit var message : MessageData
     private var calDate = arrayOf(alarmCalendar.get(Calendar.YEAR), alarmCalendar.get(Calendar.MONTH),
         alarmCalendar.get(Calendar.DAY_OF_MONTH), alarmCalendar.get(Calendar.HOUR), alarmCalendar.get(Calendar.MINUTE))
+    private var user = 0
+    //name 0:user님 1:user아/야 2.이름 없음
+    //tone 0:공손 1:친근
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_message)
+        val sharedPref = this.getSharedPreferences("user", Context.MODE_PRIVATE)
+        val userName = sharedPref.getString("name", null)
+        tvSendMsgUserName.text = userName
         alertCalendar()
         createNotificationChannel()
 
@@ -37,8 +44,25 @@ class AddMessageActivity : AppCompatActivity() {
             calDate[4] = m
             Log.d("yyjLog", "time: " + calDate[3] + ", " + calDate[4])
         }
-
+        rgUserName.setOnCheckedChangeListener { radioGroup, i ->
+            when (i) {
+                R.id.rbtn0 -> user = 0
+                R.id.rbtn1 -> user = 1
+                R.id.rbtn2 -> user = 2
+            }
+        }
         btnSaveMessage.setOnClickListener {
+            message.id = 0 //임시 id
+            message.content = etSendMsgContent.text.toString()
+            if (user == 1) {
+                if (userName != null) {
+                    message.name = setSendMsgName(userName)
+                }
+                else {
+                    message.name = ""
+                }
+            }
+
             alarmCalendar.set(calDate[0], calDate[1], calDate[2], calDate[3], calDate[4], 0)
             if (alarmCalendar.timeInMillis > System.currentTimeMillis()) {
                 setAlarm()
@@ -71,8 +95,8 @@ class AddMessageActivity : AppCompatActivity() {
                 this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             intent = Intent(this, AlarmReceiver::class.java).let { intent ->
-                intent.putExtra("channelId", CHANNEL_ID)
-                intent.putExtra("title", "id")
+                intent.putExtra("channelId", channelId)
+                intent.putExtra("message", message)
                 PendingIntent.getBroadcast(this, System.currentTimeMillis().toInt(), intent, FLAG_UPDATE_CURRENT)
             }
         alarmManager.set(
@@ -88,13 +112,25 @@ class AddMessageActivity : AppCompatActivity() {
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
             }
             // Register the channel with the system
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun setSendMsgName(name: String): String {
+        val last = name[name.length - 1]
+        if (last < 0xAC00.toChar() || last > 0xD7A3.toChar()) {
+            return name
+        }
+        return if ((last - 0xAC00.toChar()) % 28 > 0) {
+            name + "아"
+        } else {
+            name + "야"
         }
     }
 }
