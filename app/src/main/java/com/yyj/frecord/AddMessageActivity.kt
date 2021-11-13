@@ -23,15 +23,14 @@ class AddMessageActivity : AppCompatActivity() {
     private lateinit var message : MessageData
     private var calDate = arrayOf(alarmCalendar.get(Calendar.YEAR), alarmCalendar.get(Calendar.MONTH),
         alarmCalendar.get(Calendar.DAY_OF_MONTH), alarmCalendar.get(Calendar.HOUR), alarmCalendar.get(Calendar.MINUTE))
-    private var user = 0
-    //name 0:user님 1:user아/야 2.이름 없음
+    private var user = 0 //0:님 1:아/야 2.이름 없음
     //tone 0:공손 1:친근
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_message)
         val sharedPref = this.getSharedPreferences("user", Context.MODE_PRIVATE)
-        val userName = sharedPref.getString("name", null)
+        val userName = sharedPref.getString("name", "")
         tvSendMsgUserName.text = userName
         alertCalendar()
         createNotificationChannel()
@@ -54,13 +53,8 @@ class AddMessageActivity : AppCompatActivity() {
         btnSaveMessage.setOnClickListener {
             message.id = 0 //임시 id
             message.content = etSendMsgContent.text.toString()
-            if (user == 1) {
-                if (userName != null) {
-                    message.name = setSendMsgName(userName)
-                }
-                else {
-                    message.name = ""
-                }
+            if (userName != null) {
+                setSendMsgName(userName)
             }
 
             alarmCalendar.set(calDate[0], calDate[1], calDate[2], calDate[3], calDate[4], 0)
@@ -77,7 +71,7 @@ class AddMessageActivity : AppCompatActivity() {
     private fun alertCalendar() {
         val builder = AlertDialog.Builder(this)
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_datepicker, null)
-        var calView = view.calendarView
+        val calView = view.calendarView
         calView.minDate = System.currentTimeMillis() - 1000
         calView.setOnDateChangeListener { calendarView, y, m, d ->
             calDate[0] = y
@@ -122,7 +116,19 @@ class AddMessageActivity : AppCompatActivity() {
         }
     }
 
-    private fun setSendMsgName(name: String): String {
+    private fun setSendMsgName(name: String) {
+        if (user == 0) {
+            message.name = name + "님"
+        }
+        else if (user == 1) {
+            message.name = isUserNameKorean(name)
+        }
+        else {
+            message.name = null
+        }
+    }
+
+    private fun isUserNameKorean(name: String): String {
         val last = name[name.length - 1]
         if (last < 0xAC00.toChar() || last > 0xD7A3.toChar()) {
             return name
