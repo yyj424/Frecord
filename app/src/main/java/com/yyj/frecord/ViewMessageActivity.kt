@@ -11,9 +11,7 @@ class ViewMessageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_message)
 
-        if (intent.getSerializableExtra("message") != null) {
-            val message = intent.getSerializableExtra("message") as MessageData
-            etViewMsg.setText(message.content)
-        }
+        val message = intent.getStringExtra("message")
+        etViewMsg.setText(message)
     }
 }

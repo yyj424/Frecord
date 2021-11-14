@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -20,7 +21,6 @@ class AddMessageActivity : AppCompatActivity() {
     private lateinit var dialog : AlertDialog
     private lateinit var intent : PendingIntent
     private val alarmCalendar = Calendar.getInstance()
-    private lateinit var message : MessageData
     private var calDate = arrayOf(alarmCalendar.get(Calendar.YEAR), alarmCalendar.get(Calendar.MONTH),
         alarmCalendar.get(Calendar.DAY_OF_MONTH), alarmCalendar.get(Calendar.HOUR), alarmCalendar.get(Calendar.MINUTE))
     private var user = 0 //0:님 1:아/야 2.이름 없음
@@ -41,7 +41,6 @@ class AddMessageActivity : AppCompatActivity() {
         timePicker.setOnTimeChangedListener { _, h, m ->
             calDate[3] = h
             calDate[4] = m
-            Log.d("yyjLog", "time: " + calDate[3] + ", " + calDate[4])
         }
         rgUserName.setOnCheckedChangeListener { radioGroup, i ->
             when (i) {
@@ -51,19 +50,22 @@ class AddMessageActivity : AppCompatActivity() {
             }
         }
         btnSaveMessage.setOnClickListener {
-            message.id = 0 //임시 id
-            message.content = etSendMsgContent.text.toString()
-            if (userName != null) {
-                setSendMsgName(userName)
-            }
-
-            alarmCalendar.set(calDate[0], calDate[1], calDate[2], calDate[3], calDate[4], 0)
-            if (alarmCalendar.timeInMillis > System.currentTimeMillis()) {
-                setAlarm()
-                Log.d("yyjLog", "alarm저장: " + alarmCalendar.time)
+            if (TextUtils.isEmpty(etSendMsgContent.text.toString().trim()))
+            {
+                Toast.makeText(this, "메시지를 입력해 주세요", Toast.LENGTH_SHORT).show()
             }
             else {
-                Toast.makeText(this, "현재 시간 이후로 설정해 주세요", Toast.LENGTH_SHORT).show()
+                if (userName != null) {
+                    alarmCalendar.set(calDate[0], calDate[1], calDate[2], calDate[3], calDate[4], 0)
+                    if (alarmCalendar.timeInMillis > System.currentTimeMillis()) {
+                        setAlarm(setSendMsg(userName))
+                        Log.d("yyjLog", "alarm저장: " + alarmCalendar.time)
+                        finish()
+                    }
+                    else {
+                        Toast.makeText(this, "현재 시간 이후로 설정해 주세요", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }
@@ -77,20 +79,20 @@ class AddMessageActivity : AppCompatActivity() {
             calDate[0] = y
             calDate[1] = m
             calDate[2] = d
-            Log.d("yyjLog", "calendar: " + calDate[0] + ", " + calDate[1] + ", " + calDate[2])
             dialog.dismiss()
         }
         builder.setView(view)
         dialog = builder.create()
     }
 
-    private fun setAlarm() {
+    private fun setAlarm(message: String) {
         val alarmManager =
                 this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             intent = Intent(this, AlarmReceiver::class.java).let { intent ->
                 intent.putExtra("channelId", channelId)
                 intent.putExtra("message", message)
+                Log.d("yyjLog", "message: " + message + ",," + channelId)
                 PendingIntent.getBroadcast(this, System.currentTimeMillis().toInt(), intent, FLAG_UPDATE_CURRENT)
             }
         alarmManager.set(
@@ -116,27 +118,26 @@ class AddMessageActivity : AppCompatActivity() {
         }
     }
 
-    private fun setSendMsgName(name: String) {
+    private fun setSendMsg(name: String): String {
+        var to = ""
         if (user == 0) {
-            message.name = name + "님"
+            to = name + "님, "
         }
         else if (user == 1) {
-            message.name = isUserNameKorean(name)
+            to = isUserNameKorean(name)
         }
-        else {
-            message.name = null
-        }
+        return to + etSendMsgContent.text.toString()
     }
 
     private fun isUserNameKorean(name: String): String {
         val last = name[name.length - 1]
         if (last < 0xAC00.toChar() || last > 0xD7A3.toChar()) {
-            return name
+            return "$name, "
         }
         return if ((last - 0xAC00.toChar()) % 28 > 0) {
-            name + "아"
+            name + "아, "
         } else {
-            name + "야"
+            name + "야, "
         }
     }
 }
