@@ -13,9 +13,9 @@ import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.android.synthetic.main.layout_bottom.*
 
 class MessageActivity : Fragment() {
-    lateinit var msgListAdapter: MessageListAdapter
-    lateinit var ctx : Context
-    val msgList = arrayListOf<MessageData>()
+    private lateinit var msgListAdapter: MessageListAdapter
+    private lateinit var ctx : Context
+    private val msgList = arrayListOf<MessageData>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -33,6 +33,8 @@ class MessageActivity : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         icMenu1.setImageResource(R.drawable.ic_selected_view)
         icMenu2.setImageResource(R.drawable.ic_not_selected_view)
+        val sharedPref = ctx.getSharedPreferences("user", Context.MODE_PRIVATE)
+        tvToUserName.text = sharedPref.getString("name", null)
         initList()
         if (msgList.size > 0) {
             tvMsgExplain.visibility = View.INVISIBLE
@@ -44,15 +46,12 @@ class MessageActivity : Fragment() {
     }
 
     private fun initList() {
-        val itemCheckListener = object : MessageListAdapter.OnItemClickListener{
-            override fun onClick(view: View, position: Int) {
-                Log.d("yyjLog", "pos: $position")
-            }
-        }
         rvMsg.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.VERTICAL, false)
         msgListAdapter = MessageListAdapter(ctx, msgList, false)
-        msgListAdapter.setItemClickListener(itemCheckListener)
         rvMsg.adapter = msgListAdapter
+        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
+        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
+        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
 
         msgListAdapter.notifyDataSetChanged()
     }

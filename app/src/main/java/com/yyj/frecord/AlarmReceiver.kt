@@ -12,10 +12,9 @@ class AlarmReceiver: BroadcastReceiver() {
         val message = getIntent.getStringExtra("message")
         val channelId = getIntent.getStringExtra("channelId")
 
-        val intent = Intent(context, ViewMessageActivity::class.java).apply {
+        val intent = Intent(context, MessageBoxActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        intent.putExtra("message", message)
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
         val builder = NotificationCompat.Builder(context, channelId!!)
