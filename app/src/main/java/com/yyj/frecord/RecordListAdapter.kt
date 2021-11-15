@@ -40,8 +40,8 @@ class RecordListAdapter (private val context : Context, private val list : Array
         private val tvTitle : TextView = view.findViewById(R.id.tvRecordTitle)
         private val tvDate : TextView = view.findViewById(R.id.tvRecordDate)
         private val cbEdit : CheckBox = view.findViewById(R.id.cbEditRecord)
+        private val dateFormat = SimpleDateFormat("yyyy. MM. dd")
 
-        private val date = SimpleDateFormat("yyyy. MM. dd")
         fun getRecord(recordData: RecordData){
             if (edit) {
                 cbEdit.visibility = View.VISIBLE
@@ -51,7 +51,7 @@ class RecordListAdapter (private val context : Context, private val list : Array
             }
             cbEdit.isChecked = recordData.checked
             tvTitle.text = recordData.title
-            tvDate.text = date.format(recordData.date)
+            tvDate.text = dateFormat.format(recordData.date)
             cbEdit.setOnCheckedChangeListener { _, isChecked ->
                 recordData.checked = isChecked
             }
