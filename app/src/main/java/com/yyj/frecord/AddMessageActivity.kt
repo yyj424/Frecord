@@ -9,10 +9,12 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_add_message.*
 import kotlinx.android.synthetic.main.dialog_datepicker.view.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -21,10 +23,11 @@ class AddMessageActivity : AppCompatActivity() {
     private lateinit var dialog : AlertDialog
     private lateinit var intent : PendingIntent
     private val alarmCalendar = Calendar.getInstance()
-    private var calDate = arrayOf(alarmCalendar.get(Calendar.YEAR), alarmCalendar.get(Calendar.MONTH),
-        alarmCalendar.get(Calendar.DAY_OF_MONTH), alarmCalendar.get(Calendar.HOUR), alarmCalendar.get(Calendar.MINUTE))
+    private val today = Calendar.getInstance()
+    private var calDate = arrayOf(today.get(Calendar.YEAR), today.get(Calendar.MONTH),
+        today.get(Calendar.DAY_OF_MONTH), today.get(Calendar.HOUR), today.get(Calendar.MINUTE))
     private var user = 0 //0:님 1:아/야 2.이름 없음
-    //tone 0:공손 1:친근
+    private lateinit var randomMsg : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +35,8 @@ class AddMessageActivity : AppCompatActivity() {
         val sharedPref = this.getSharedPreferences("user", Context.MODE_PRIVATE)
         val userName = sharedPref.getString("name", "")
         tvSendMsgUserName.text = userName
-        alertCalendar()
+        setAlertCalendar()
+        setCheckBox()
         createNotificationChannel()
 
         btnPickDate.setOnClickListener {
@@ -57,10 +61,18 @@ class AddMessageActivity : AppCompatActivity() {
             else {
                 if (userName != null) {
                     alarmCalendar.set(calDate[0], calDate[1], calDate[2], calDate[3], calDate[4], 0)
+                    var isRandMsg = false
+                    if (checkBox1.isChecked) {
+                        isRandMsg = true
+                        setRandom(1)
+                    }
+                    if (checkBox2.isChecked) {
+                        setRandom(2)
+                    }
                     if (alarmCalendar.timeInMillis > System.currentTimeMillis()) {
-                        setAlarm(setSendMsg(userName))
-                        Log.d("yyjLog", "alarm저장: " + alarmCalendar.time)
-                        finish()
+                        //setAlarm(setSendMsg(userName, isRandMsg))
+                        Log.d("yyjLog", "***alarm저장  : " + alarmCalendar.time +",,,msg: " + setSendMsg(userName, isRandMsg))
+                        //finish()
                     }
                     else {
                         Toast.makeText(this, "현재 시간 이후로 설정해 주세요", Toast.LENGTH_SHORT).show()
@@ -70,15 +82,19 @@ class AddMessageActivity : AppCompatActivity() {
         }
     }
 
-    private fun alertCalendar() {
+    private fun setAlertCalendar() {
         val builder = AlertDialog.Builder(this)
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_datepicker, null)
         val calView = view.calendarView
+        val dateFormat = SimpleDateFormat("yyyy. MM. dd")
+        tvSendMsgDate.text = dateFormat.format(calView.date)
         calView.minDate = System.currentTimeMillis() - 1000
-        calView.setOnDateChangeListener { calendarView, y, m, d ->
+        calView.setOnDateChangeListener { _, y, m, d ->
             calDate[0] = y
             calDate[1] = m
             calDate[2] = d
+            val date = y.toString() + ". " + (m + 1).toString() + ". " + d.toString()
+            tvSendMsgDate.text = date
             dialog.dismiss()
         }
         builder.setView(view)
@@ -92,8 +108,7 @@ class AddMessageActivity : AppCompatActivity() {
             intent = Intent(this, AlarmReceiver::class.java).let { intent ->
                 intent.putExtra("channelId", channelId)
                 intent.putExtra("message", message)
-                Log.d("yyjLog", "message: " + message + ",," + channelId)
-                PendingIntent.getBroadcast(this, System.currentTimeMillis().toInt(), intent, FLAG_UPDATE_CURRENT)
+                PendingIntent.getBroadcast(this, System.currentTimeMillis().toInt(), intent, FLAG_UPDATE_CURRENT)//flag를 id로
             }
         alarmManager.set(
             AlarmManager.RTC_WAKEUP,
@@ -118,7 +133,7 @@ class AddMessageActivity : AppCompatActivity() {
         }
     }
 
-    private fun setSendMsg(name: String): String {
+    private fun setSendMsg(name: String, rand: Boolean): String {
         var to = ""
         if (user == 0) {
             to = name + "님, "
@@ -126,7 +141,7 @@ class AddMessageActivity : AppCompatActivity() {
         else if (user == 1) {
             to = isUserNameKorean(name)
         }
-        return to + etSendMsgContent.text.toString()
+        return if (rand) to + randomMsg else to + etSendMsgContent.text.toString()
     }
 
     private fun isUserNameKorean(name: String): String {
@@ -138,6 +153,44 @@ class AddMessageActivity : AppCompatActivity() {
             name + "아, "
         } else {
             name + "야, "
+        }
+    }
+
+    private fun setCheckBox() {
+        var tempUser = 0
+        var tempContent = ""
+        checkBox1.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                tempUser = user
+                tempContent = etSendMsgContent.text.toString()
+                llSendMsgName.visibility = View.GONE
+                etSendMsgContent.setText("당신의 감정을 위한 응원 문구를 보내드려요.")
+                etSendMsgContent.isEnabled = false
+            }
+            else {
+                user = tempUser
+                llSendMsgName.visibility = View.VISIBLE
+                etSendMsgContent.setText(tempContent)
+                etSendMsgContent.isEnabled = true
+            }
+        }
+        checkBox2.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                llSendMsgDate.visibility = View.GONE
+            }
+            else {
+                llSendMsgDate.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun setRandom(cb: Int) {
+        if (cb == 1) { //메시지
+            user = (0..2).random()
+            randomMsg = "random" // 임시 랜덤 메시지
+        }
+        else { //날짜
+            alarmCalendar.add(Calendar.DAY_OF_MONTH, (1..30).random())
         }
     }
 }
