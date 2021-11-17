@@ -1,5 +1,6 @@
 package com.yyj.frecord
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,22 @@ class AddSimpleRecordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_simple_record)
 
+        val content = intent.getStringExtra("content")
+        var emotion = intent.getIntExtra("emotion", 2)
+
+        if (content != null) {
+
+        }
+        seekBar.progress = emotion
+
+        tvChangeFreeMode.setOnClickListener {
+            val intent = Intent(this, AddRecordActivity::class.java)
+            intent.putExtra("emotion", emotion)
+//            intent.putExtra("content", )
+            startActivity(intent)
+            finish()
+        }
+
         seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
                 when (p1) {
@@ -20,6 +37,7 @@ class AddSimpleRecordActivity : AppCompatActivity() {
                     3 -> seekBar.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb3)
                     4 -> seekBar.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb4)
                 }
+                emotion = p1
             }
             override fun onStartTrackingTouch(p0: SeekBar?) {}
             override fun onStopTrackingTouch(p0: SeekBar?) {}
