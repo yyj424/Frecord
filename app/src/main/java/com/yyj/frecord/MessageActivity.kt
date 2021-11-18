@@ -43,7 +43,7 @@ class MessageActivity : Fragment() {
             val intent = Intent(ctx, AddMessageActivity::class.java)
             startActivity(intent)
         }
-        llMsgBox.setOnClickListener {
+        icMsgBox.setOnClickListener {
             val intent = Intent(ctx, MessageBoxActivity::class.java)
             startActivity(intent)
         }
