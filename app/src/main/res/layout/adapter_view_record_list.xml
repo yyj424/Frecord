@@ -52,5 +52,5 @@
         app:layout_constraintBottom_toBottomOf="@+id/tvRecordTitle"
         app:layout_constraintStart_toEndOf="@+id/tvRecordTitle"
         app:layout_constraintTop_toTopOf="@+id/tvRecordTitle"
-        app:srcCompat="@drawable/ic_lock" />
+        app:srcCompat="@drawable/ic_lock_adapter" />
 </androidx.constraintlayout.widget.ConstraintLayout>
