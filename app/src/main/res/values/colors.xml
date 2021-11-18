@@ -5,4 +5,5 @@
     <color name="charcoal">#595B5C</color>
     <color name="gray">#FFBCBCBC</color>
     <color name="light_gray">#FFDCDCDC</color>
+    <color name="more_light_gray">#FFF3F3F3</color>
 </resources>

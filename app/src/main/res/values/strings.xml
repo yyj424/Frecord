@@ -2,4 +2,39 @@
     <string name="app_name">Frecord</string>
     <string name="channel_name">message</string>
     <string name="channel_description">message_description</string>
+    <string-array name="placeList">
+        <item>직접 입력</item>
+        <item>집</item>
+        <item>학교</item>
+        <item>회사</item>
+        <item>카페</item>
+        <item>식당</item>
+        <item>공원</item>
+        <item>파티</item>
+        <item>여행</item>
+        <item>길거리</item>
+    </string-array>
+    <string-array name="feelingList">
+        <item>직접 입력</item>
+        <item>슬픔</item>
+        <item>화남</item>
+        <item>우울함</item>
+        <item>짜증남</item>
+        <item>미안함</item>
+        <item>불행함</item>
+        <item>무서움</item>
+        <item>속상함</item>
+        <item>외로움</item>
+        <item>불안함</item>
+        <item>기쁨</item>
+        <item>즐거움</item>
+        <item>행복함</item>
+        <item>뿌듯함</item>
+        <item>놀람</item>
+        <item>신남</item>
+        <item>감동</item>
+        <item>설렘</item>
+        <item>재밌음</item>
+        <item>편안함</item>
+    </string-array>
 </resources>
