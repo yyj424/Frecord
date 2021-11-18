@@ -1,12 +1,14 @@
 package com.yyj.frecord
 
 import android.content.Context
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_welcome.*
 import java.text.SimpleDateFormat
 
 class RecordListAdapter (private val context : Context, private val list : ArrayList<RecordData>, private val edit : Boolean) : RecyclerView.Adapter<RecordListAdapter.ViewHolder>() {
@@ -50,8 +52,14 @@ class RecordListAdapter (private val context : Context, private val list : Array
                 cbEdit.visibility = View.GONE
             }
             cbEdit.isChecked = recordData.checked
-            tvTitle.text = recordData.title
-            tvDate.text = dateFormat.format(recordData.date)
+            if (!TextUtils.isEmpty(recordData.title.trim())) {
+                tvTitle.text = recordData.title
+                tvDate.text = dateFormat.format(recordData.date)
+            }
+            else {
+                tvTitle.text = dateFormat.format(recordData.date)
+                tvDate.visibility = View.INVISIBLE
+            }
             cbEdit.setOnCheckedChangeListener { _, isChecked ->
                 recordData.checked = isChecked
             }

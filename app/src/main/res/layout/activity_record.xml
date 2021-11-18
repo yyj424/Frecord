@@ -106,6 +106,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="님의 감정을 기록해보세요"
+            android:textColor="@color/gray"
             android:textSize="16sp" />
 
     </LinearLayout>
