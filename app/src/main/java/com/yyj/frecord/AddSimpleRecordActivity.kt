@@ -1,7 +1,9 @@
 package com.yyj.frecord
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -9,37 +11,26 @@ import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_add_simple_record.*
+import kotlinx.android.synthetic.main.dialog_record_setting.view.*
 
 class AddSimpleRecordActivity : AppCompatActivity() {
-    private var feelingScore = 2
+    private lateinit var dialog : AlertDialog
+    private var locked = false
     private var place: String? = null
     private var feeling: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_simple_record)
-
-        val title = intent.getStringExtra("title")
-        feelingScore = intent.getIntExtra("feelingScore", 2)
-
-        if (title != null) {
-            etSimpleRecordTitle.setText(title)
-        }
-
         setSeekBar()
         setSpinners()
+        setSettingDialog()
 
         ivSimpleRecordSetting.setOnClickListener {
-            val intent = Intent(this, AddRecordActivity::class.java)
-            intent.putExtra("title", etSimpleRecordTitle.text.toString())
-            intent.putExtra("feelingScore", feelingScore)
-            startActivity(intent)
-            finish()
-            //dialog로 변경
+            dialog.show()
         }
     }
 
     private fun setSeekBar() {
-        seekBarInSimple.progress = feelingScore
         seekBarInSimple.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
                 when (p1) {
@@ -49,7 +40,6 @@ class AddSimpleRecordActivity : AppCompatActivity() {
                     3 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb3)
                     4 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb4)
                 }
-                feelingScore = p1
             }
             override fun onStartTrackingTouch(p0: SeekBar?) {}
             override fun onStopTrackingTouch(p0: SeekBar?) {}
@@ -88,5 +78,32 @@ class AddSimpleRecordActivity : AppCompatActivity() {
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
+    }
+
+    private fun setSettingDialog() {
+        val builder = AlertDialog.Builder(this)
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog_record_setting, null)
+        view.tvModeSetting.text = "자유기록"
+        view.btnChangeMode.setOnClickListener {
+            dialog.dismiss()
+            val intent = Intent(this, AddRecordActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        view.btnLockSetting.setOnClickListener {
+            locked = if (!locked) {
+                view.ivLockSetting.setImageResource(R.drawable.ic_lock)
+                true
+            } else {
+                view.ivLockSetting.setImageResource(R.drawable.ic_unlock)
+                false
+            }
+            dialog.dismiss()
+        }
+        view.btnDeleteRecord.setOnClickListener {
+            dialog.dismiss()
+        }
+        builder.setView(view)
+        dialog = builder.create()
     }
 }

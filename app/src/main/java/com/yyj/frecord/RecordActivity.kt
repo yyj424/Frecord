@@ -37,7 +37,7 @@ class RecordActivity : Fragment() {
             llExplain.visibility = View.INVISIBLE
         }
         btnAddRecord.setOnClickListener {
-            val intent = Intent(ctx, AddRecordActivity::class.java)
+            val intent = Intent(ctx, AddSimpleRecordActivity::class.java)
             startActivity(intent)
         }
     }
