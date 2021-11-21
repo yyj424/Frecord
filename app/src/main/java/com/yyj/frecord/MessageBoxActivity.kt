@@ -23,8 +23,8 @@ class MessageBoxActivity : AppCompatActivity() {
         rvMsgBox.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         msgBoxAdapter = MessageBoxAdapter(this, msgList, false)
         rvMsgBox.adapter = msgBoxAdapter
-        msgList.add(MessageData(0, System.currentTimeMillis(), "메시지1", false))
-        msgList.add(MessageData(0, System.currentTimeMillis(), "메시지2", false))
+        msgList.add(MessageData(0, System.currentTimeMillis(), "메시지1111111111111111111", false))
+        msgList.add(MessageData(0, System.currentTimeMillis(), "메시지2\n메시지", false))
         msgList.add(MessageData(0, System.currentTimeMillis(), "메시지3", false))
 
         msgBoxAdapter.notifyDataSetChanged()

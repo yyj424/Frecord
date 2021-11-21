@@ -18,7 +18,7 @@ class AlarmReceiver: BroadcastReceiver() {
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
         val builder = NotificationCompat.Builder(context, channelId!!)
-            .setSmallIcon(R.drawable.ic_selected_view) // temporal icon
+            .setSmallIcon(R.drawable.ic_msg) // temporal icon
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

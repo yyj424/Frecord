@@ -32,7 +32,6 @@ class WelcomeActivity : AppCompatActivity() {
             }
             else {
                 etUserName.text = null
-                etUserName.hint = "이름을 입력해주세요"
             }
         }
     }

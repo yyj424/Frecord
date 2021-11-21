@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_welcome.*
 import java.text.SimpleDateFormat
 
 class RecordListAdapter (private val context : Context, private val list : ArrayList<RecordData>, private val edit : Boolean) : RecyclerView.Adapter<RecordListAdapter.ViewHolder>() {

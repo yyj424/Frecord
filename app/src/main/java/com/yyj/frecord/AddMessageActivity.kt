@@ -26,7 +26,7 @@ class AddMessageActivity : AppCompatActivity() {
     private val today = Calendar.getInstance()
     private var calDate = arrayOf(today.get(Calendar.YEAR), today.get(Calendar.MONTH),
         today.get(Calendar.DAY_OF_MONTH), today.get(Calendar.HOUR), today.get(Calendar.MINUTE))
-    private var user = 0 //0:님 1:아/야 2.이름 없음
+    private var user = 0 //0:~아/야, 1:~, 2.이름 없음
     private lateinit var randomMsg : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,7 @@ class AddMessageActivity : AppCompatActivity() {
         setCheckBox()
         createNotificationChannel()
 
-        btnPickDate.setOnClickListener {
+        llSendMsgDate.setOnClickListener {
             dialog.show()
         }
         timePicker.setOnTimeChangedListener { _, h, m ->
@@ -70,9 +70,9 @@ class AddMessageActivity : AppCompatActivity() {
                         setRandom(2)
                     }
                     if (alarmCalendar.timeInMillis > System.currentTimeMillis()) {
-                        //setAlarm(setSendMsg(userName, isRandMsg))
+                        setAlarm(setSendMsg(userName, isRandMsg))
                         Log.d("yyjLog", "***alarm저장  : " + alarmCalendar.time +",,,msg: " + setSendMsg(userName, isRandMsg))
-                        //finish()
+                        finish()
                     }
                     else {
                         Toast.makeText(this, "현재 시간 이후로 설정해 주세요", Toast.LENGTH_SHORT).show()
@@ -136,10 +136,10 @@ class AddMessageActivity : AppCompatActivity() {
     private fun setSendMsg(name: String, rand: Boolean): String {
         var to = ""
         if (user == 0) {
-            to = name + "님, "
+            to = isUserNameKorean(name)
         }
         else if (user == 1) {
-            to = isUserNameKorean(name)
+            to = "$name, "
         }
         return if (rand) to + randomMsg else to + etSendMsgContent.text.toString()
     }
@@ -147,7 +147,7 @@ class AddMessageActivity : AppCompatActivity() {
     private fun isUserNameKorean(name: String): String {
         val last = name[name.length - 1]
         if (last < 0xAC00.toChar() || last > 0xD7A3.toChar()) {
-            return "$name, "
+            return name + "아, "
         }
         return if ((last - 0xAC00.toChar()) % 28 > 0) {
             name + "아, "
@@ -164,7 +164,7 @@ class AddMessageActivity : AppCompatActivity() {
                 tempUser = user
                 tempContent = etSendMsgContent.text.toString()
                 llSendMsgName.visibility = View.GONE
-                etSendMsgContent.setText("당신의 감정을 위한 응원 문구를 보내드려요.")
+                etSendMsgContent.setText("당신의 감정을 위한 메시지를 보내드려요.")
                 etSendMsgContent.isEnabled = false
             }
             else {

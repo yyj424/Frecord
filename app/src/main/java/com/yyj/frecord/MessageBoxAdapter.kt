@@ -27,7 +27,7 @@ class MessageBoxAdapter (private val context : Context, private val list : Array
         private val tvDate : TextView = view.findViewById(R.id.tvMsgBoxDate)
         private val tvContent : TextView = view.findViewById(R.id.tvMsgBoxContent)
         private val cbEdit : CheckBox = view.findViewById(R.id.cbEditMsgBox)
-        private val dateFormat = SimpleDateFormat("yyyy. MM. dd. HH : mm")
+        private val dateFormat = SimpleDateFormat("yyyy. MM. dd.  HH:mm")
 
         fun getMessage(msgData: MessageData){
             if (edit) {
