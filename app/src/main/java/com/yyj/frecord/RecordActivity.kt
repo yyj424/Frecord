@@ -17,7 +17,7 @@ class RecordActivity : Fragment() {
     lateinit var recordListAdapter: RecordListAdapter
     lateinit var ctx : Context
     lateinit var itemCheckListener: RecordListAdapter.OnItemClickListener
-    lateinit var itemClickListener: RecordListAdapter.OnItemClickListener
+    private lateinit var itemClickListener: RecordListAdapter.OnItemClickListener
     lateinit var itemLongClickListener: RecordListAdapter.OnItemLongClickListener
     val rdList = arrayListOf<RecordData>()
 
@@ -41,14 +41,15 @@ class RecordActivity : Fragment() {
         if (rdList.size > 0) {
             llExplain.visibility = View.INVISIBLE
         }
+        btnEditLock.visibility = View.VISIBLE
         setButton()
     }
 
     private fun initList() {
         itemCheckListener = object : RecordListAdapter.OnItemClickListener {
             override fun onClick(view: View, position: Int) {
-                val cbDelete = view.findViewById<CheckBox>(R.id.cbEditRecord)
-                cbDelete.isChecked = !cbDelete.isChecked
+                val cbEdit = view.findViewById<CheckBox>(R.id.cbEditRecord)
+                cbEdit.isChecked = !cbEdit.isChecked
             }
         }
         itemClickListener = object : RecordListAdapter.OnItemClickListener {
@@ -58,15 +59,15 @@ class RecordActivity : Fragment() {
         }
         itemLongClickListener = object : RecordListAdapter.OnItemLongClickListener {
             override fun onLongClick(view: View, position: Int): Boolean {
-                view.findViewById<CheckBox>(R.id.cbEditRecord).isChecked = true
                 if (layoutEdit.visibility == View.GONE) {
+                    rdList[position].checked = true
                     setAdapter(true)
                 }
+                view.findViewById<CheckBox>(R.id.cbEditRecord).isChecked = true
                 return true
             }
         }
         rvRecord.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.VERTICAL, false)
-        setAdapter(false)
 
         rdList.add(RecordData(0, "오늘의 기분 및 제목1", System.currentTimeMillis(), true, false))
         rdList.add(RecordData(0, "오늘의 기분 및 제목2", System.currentTimeMillis(), false, false))
@@ -79,7 +80,7 @@ class RecordActivity : Fragment() {
         rdList.add(RecordData(0, "오늘의 기분 및 제목9", System.currentTimeMillis(), false, false))
         rdList.add(RecordData(0, "오늘의 기분 및 제목10", System.currentTimeMillis(), false, false))
 
-        recordListAdapter.notifyDataSetChanged()//변경 여부 검토
+        setAdapter(false)
     }
 
     private fun setAdapter(edit : Boolean) {
@@ -104,30 +105,47 @@ class RecordActivity : Fragment() {
             startActivity(intent)
         }
         btnEditDel.setOnClickListener {
-            setAdapter(false)
+            var checked = false
             val rdListIterator = rdList.iterator()
             while (rdListIterator.hasNext()) {
                 val record = rdListIterator.next()
                 if (record.checked) {
+                    checked = true
                     rdListIterator.remove()
-                    Log.d("yyjLog", "삭제 : " + record.title)
                     //db 삭제
                 }
             }
+            if (checked) {
+                setAdapter(false)
+            }
         }
         btnEditLock.setOnClickListener {
-            setAdapter(false)
+            var checked = false
             val rdListIterator = rdList.iterator()
             while (rdListIterator.hasNext()) {
                 val record = rdListIterator.next()
-                if (record.checked && !record.locked) {
-
-                    Log.d("yyjLog", "삭제 : " + record.title)
+                if (record.checked) {
+                    //비밀번호 존재 여부 확인
+                    checked = true
+                    record.checked = false
+                    if (!record.locked) {
+                        record.locked = true
+                    }
                     //db 잠금
                 }
             }
+            if (checked) {
+                setAdapter(false)
+            }
         }
         btnEditCancel.setOnClickListener {
+            val rdListIterator = rdList.iterator()
+            while (rdListIterator.hasNext()) {
+                val record = rdListIterator.next()
+                if (record.checked) {
+                    record.checked = false
+                }
+            }
             setAdapter(false)
         }
     }

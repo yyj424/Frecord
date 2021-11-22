@@ -10,17 +10,39 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 
 class MessageBoxAdapter (private val context : Context, private val list : ArrayList<MessageData>, private val edit : Boolean) : RecyclerView.Adapter<MessageBoxAdapter.ViewHolder>() {
+    interface OnItemClickListener {
+        fun onClick(view: View, position: Int)
+    }
+    interface OnItemLongClickListener {
+        fun onLongClick(view: View, position: Int) : Boolean
+    }
+
+    private lateinit var itemClickListener: OnItemClickListener
+    private lateinit var itemLongClickListener : OnItemLongClickListener
+
+    fun setItemClickListener(itemClickListener: OnItemClickListener) {
+        this.itemClickListener = itemClickListener
+    }
+    fun setItemLongClickListener(itemLongClickListener: OnItemLongClickListener) {
+        this.itemLongClickListener = itemLongClickListener
+    }
+
     override fun getItemCount() = list.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.adapter_view_message_box, parent, false)
-
+        val view = LayoutInflater.from(context).inflate(R.layout.adapter_view_message_box, parent, false)
         return ViewHolder(view, edit)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val msgData = list[position]
         holder.getMessage(msgData)
+        holder.itemView.setOnClickListener {
+            itemClickListener.onClick(it, position)
+        }
+        holder.itemView.setOnLongClickListener {
+            itemLongClickListener.onLongClick(it, position)
+        }
     }
 
     inner class ViewHolder(view: View, private val edit : Boolean) : RecyclerView.ViewHolder(view) {
@@ -32,6 +54,7 @@ class MessageBoxAdapter (private val context : Context, private val list : Array
         fun getMessage(msgData: MessageData){
             if (edit) {
                 cbEdit.visibility = View.VISIBLE
+                cbEdit.isChecked = msgData.checked
             }
             else {
                 cbEdit.visibility = View.GONE

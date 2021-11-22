@@ -57,6 +57,7 @@ class RecordListAdapter (private val context : Context, private val list : Array
         fun getRecord(recordData: RecordData){
             if (edit) {
                 cbEdit.visibility = View.VISIBLE
+                cbEdit.isChecked = recordData.checked
             }
             else {
                 cbEdit.visibility = View.GONE
