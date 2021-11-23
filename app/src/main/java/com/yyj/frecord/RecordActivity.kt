@@ -148,5 +148,9 @@ class RecordActivity : Fragment() {
             }
             setAdapter(false)
         }
+        ivSetting.setOnClickListener {
+            val intent = Intent(ctx, SettingActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
