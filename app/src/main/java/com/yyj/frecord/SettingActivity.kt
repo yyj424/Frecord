@@ -25,13 +25,13 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                 val intent = Intent(this, PasswordSettingActivity::class.java)
                 startActivity(intent)
             }
+            R.id.tvLicense -> {
+                val intent = Intent(this, OpenSourceActivity::class.java)
+                startActivity(intent)
+            }
             R.id.tvHelpDev -> {
 //                val intent = Intent(this, ::class.java)
 //                startActivity(intent)
-            }
-            R.id.tvOpenSource -> {
-                val intent = Intent(this, OpenSourceActivity::class.java)
-                startActivity(intent)
             }
         }
     }
