@@ -29,6 +29,11 @@
         <activity android:name=".AddMessageActivity"/>
         <activity android:name=".MessageBoxActivity"/>
         <activity android:name=".AddSimpleRecordActivity"/>
+        <activity android:name=".SettingActivity"/>
+        <activity android:name=".HelpActivity"/>
+        <activity android:name=".PasswordSettingActivity"/>
+        <activity android:name=".DefaultSettingActivity"/>
+        <activity android:name=".OpenSourceActivity"/>
     </application>
 
 </manifest>
