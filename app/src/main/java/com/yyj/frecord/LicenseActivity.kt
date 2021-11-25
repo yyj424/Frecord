@@ -2,12 +2,12 @@ package com.yyj.frecord
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_opensource.*
+import kotlinx.android.synthetic.main.activity_license.*
 
-class OpenSourceActivity : AppCompatActivity() {
+class LicenseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_opensource)
+        setContentView(R.layout.activity_license)
 
         ("Copyright (c) 2021, Kil Hyung-jin (https://github.com/orioncactus/pretendard),\n" +
                 "with Reserved Font Name Pretendard.\n" +

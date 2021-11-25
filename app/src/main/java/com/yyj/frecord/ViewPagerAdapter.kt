@@ -1,12 +1,12 @@
 package com.yyj.frecord
 
-import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.adapter.FragmentViewHolder
 
-class ViewPagerAdatper (fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
-    val fgList = listOf<Fragment>(MessageActivity(), RecordActivity(), GraphActivity())
+class ViewPagerAdapter (fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
+    private val fgList = listOf<Fragment>(MessageActivity(), RecordActivity(), GraphActivity())
 
     override fun getItemCount() :Int {
         return fgList.size

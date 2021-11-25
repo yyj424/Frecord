@@ -26,7 +26,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                 startActivity(intent)
             }
             R.id.tvLicense -> {
-                val intent = Intent(this, OpenSourceActivity::class.java)
+                val intent = Intent(this, LicenseActivity::class.java)
                 startActivity(intent)
             }
             R.id.tvHelpDev -> {
