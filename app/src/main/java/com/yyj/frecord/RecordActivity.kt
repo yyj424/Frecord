@@ -54,7 +54,7 @@ class RecordActivity : Fragment() {
         }
         itemClickListener = object : RecordListAdapter.OnItemClickListener {
             override fun onClick(view: View, position: Int) {
-                Log.d("yyjLog", "pos: " + position + " title: " + rdList[position].title)
+                //if locked
             }
         }
         itemLongClickListener = object : RecordListAdapter.OnItemLongClickListener {

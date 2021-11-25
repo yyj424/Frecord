@@ -1,10 +1,12 @@
 package com.yyj.frecord
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.SeekBar
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_add_record.*
@@ -42,6 +44,11 @@ class AddRecordActivity : AppCompatActivity() {
     private fun setSettingDialog() {
         val builder = AlertDialog.Builder(this)
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_record_setting, null)
+        val getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                view.ivLockSetting.setImageResource(R.drawable.ic_lock)
+            }
+        }
         view.tvModeSetting.text = "간편기록"
         view.btnChangeMode.setOnClickListener {
             dialog.dismiss()
@@ -51,7 +58,15 @@ class AddRecordActivity : AppCompatActivity() {
         }
         view.btnLockSetting.setOnClickListener {
             locked = if (!locked) {
-                view.ivLockSetting.setImageResource(R.drawable.ic_lock)
+                val sharedPref = this.getSharedPreferences("setting", Context.MODE_PRIVATE)
+                if (sharedPref.getString("password", null) == null) {
+                    val intent = Intent(this, PasswordSettingActivity::class.java)
+                    intent.putExtra("from", "record")
+                    getResult.launch(intent)
+                }
+                else {
+                    view.ivLockSetting.setImageResource(R.drawable.ic_lock)
+                }
                 true
             } else {
                 view.ivLockSetting.setImageResource(R.drawable.ic_unlock)
