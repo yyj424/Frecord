@@ -18,7 +18,7 @@ class MessageActivity : Fragment() {
     private lateinit var msgListAdapter: MessageListAdapter
     private lateinit var ctx : Context
     private lateinit var itemCheckListener: MessageListAdapter.OnItemClickListener
-    lateinit var itemLongClickListener: MessageListAdapter.OnItemLongClickListener
+    private lateinit var itemLongClickListener: MessageListAdapter.OnItemLongClickListener
     private val msgList = arrayListOf<MessageData>()
 
     override fun onAttach(context: Context) {
@@ -37,7 +37,7 @@ class MessageActivity : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         icMenu1.setImageResource(R.drawable.ic_selected_view)
         icMenu2.setImageResource(R.drawable.ic_not_selected_view)
-        val sharedPref = ctx.getSharedPreferences("user", Context.MODE_PRIVATE)
+        val sharedPref = ctx.getSharedPreferences("setting", Context.MODE_PRIVATE)
         tvToUserName.text = sharedPref.getString("name", null)
         initList()
         if (msgList.size > 0) {
@@ -66,9 +66,9 @@ class MessageActivity : Fragment() {
         }
         rvMsg.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.VERTICAL, false)
 
-        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
-        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
-        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
+//        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
+//        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
+//        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
 
         setAdapter(false)
     }

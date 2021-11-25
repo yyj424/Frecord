@@ -12,7 +12,7 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
-        val sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("setting", Context.MODE_PRIVATE)
         if (sharedPref.getString("name", null) != null) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

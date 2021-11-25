@@ -57,10 +57,9 @@ class AddRecordActivity : AppCompatActivity() {
                 view.ivLockSetting.setImageResource(R.drawable.ic_unlock)
                 false
             }
-            dialog.dismiss()
         }
         view.btnDeleteRecord.setOnClickListener {
-            dialog.dismiss()
+
         }
         builder.setView(view)
         dialog = builder.create()

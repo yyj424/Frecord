@@ -35,9 +35,9 @@ class RecordActivity : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initList()
-        val sharedPref = ctx.getSharedPreferences("user", Context.MODE_PRIVATE)
+        val sharedPref = ctx.getSharedPreferences("setting", Context.MODE_PRIVATE)
         tvUserName.text = sharedPref.getString("name", null)
+        initList()
         if (rdList.size > 0) {
             llExplain.visibility = View.INVISIBLE
         }
@@ -69,16 +69,16 @@ class RecordActivity : Fragment() {
         }
         rvRecord.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.VERTICAL, false)
 
-        rdList.add(RecordData(0, "오늘의 기분 및 제목1", System.currentTimeMillis(), true, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목2", System.currentTimeMillis(), false, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목3", System.currentTimeMillis(), false, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목4", System.currentTimeMillis(), false, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목5", System.currentTimeMillis(), true, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목6", System.currentTimeMillis(), false, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목7", System.currentTimeMillis(), true, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목8", System.currentTimeMillis(), true, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목9", System.currentTimeMillis(), false, false))
-        rdList.add(RecordData(0, "오늘의 기분 및 제목10", System.currentTimeMillis(), false, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목1", System.currentTimeMillis(), true, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목2", System.currentTimeMillis(), false, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목3", System.currentTimeMillis(), false, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목4", System.currentTimeMillis(), false, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목5", System.currentTimeMillis(), true, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목6", System.currentTimeMillis(), false, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목7", System.currentTimeMillis(), true, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목8", System.currentTimeMillis(), true, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목9", System.currentTimeMillis(), false, false))
+//        rdList.add(RecordData(0, "오늘의 기분 및 제목10", System.currentTimeMillis(), false, false))
 
         setAdapter(false)
     }

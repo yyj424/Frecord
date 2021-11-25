@@ -32,7 +32,7 @@ class AddMessageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_message)
-        val sharedPref = this.getSharedPreferences("user", Context.MODE_PRIVATE)
+        val sharedPref = this.getSharedPreferences("setting", Context.MODE_PRIVATE)
         val userName = sharedPref.getString("name", "")
         tvSendMsgUserName.text = userName
         setAlertCalendar()
