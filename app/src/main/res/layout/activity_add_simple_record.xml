@@ -13,7 +13,6 @@
         android:paddingStart="5dp"
         android:paddingTop="15dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_setting_record" />
@@ -23,7 +22,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="60dp"
         android:background="@null"
         android:max="4"
@@ -42,7 +41,9 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/bg_add_record"
+        android:background="@drawable/bg_add_layout"
+        android:overScrollMode="never"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +51,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_margin="20dp"
             android:orientation="vertical">
 
@@ -76,23 +77,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
                 android:text="어디에서"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
 
             <Spinner
                 android:id="@+id/placeSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/bg_spinner"
+                android:gravity="center|start" />
 
             <EditText
                 android:id="@+id/etSimpleRecordWhere"
+                style="@style/EditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:background="@null"
+                android:background="@drawable/bg_editttext"
                 android:ems="10"
-                android:hint="장소를 입력하세요"
                 android:inputType="text"
+                android:padding="5dp"
                 android:textColorHint="@color/light_gray"
                 android:textSize="17sp" />
 
@@ -102,17 +106,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
                 android:text="어떤 일이"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/etSimpleRecordWhat"
+                style="@style/EditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:background="@null"
+                android:background="@drawable/bg_editttext"
                 android:ems="10"
-                android:hint="이런 일이 있었어요"
                 android:inputType="textMultiLine|text"
+                android:padding="5dp"
                 android:textColorHint="@color/light_gray"
                 android:textSize="17sp" />
 
@@ -122,23 +127,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
                 android:text="느낀 감정은"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
 
             <Spinner
                 android:id="@+id/feelingSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/bg_spinner" />
 
             <EditText
                 android:id="@+id/etSimpleRecordFeeling"
+                style="@style/EditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:background="@null"
+                android:background="@drawable/bg_editttext"
                 android:ems="10"
-                android:hint="감정을 입력하세요"
                 android:inputType="text"
+                android:padding="5dp"
                 android:textColorHint="@color/light_gray"
                 android:textSize="17sp" />
 
@@ -148,19 +155,27 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
                 android:text="감정의 이유는"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/etSimpleRecordWhy"
+                style="@style/EditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:background="@null"
+                android:background="@drawable/bg_editttext"
                 android:ems="10"
-                android:hint="이것 때문에 이런 감정을 느꼈어요"
                 android:inputType="textMultiLine|text"
+                android:padding="5dp"
                 android:textColorHint="@color/light_gray"
                 android:textSize="17sp" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
 

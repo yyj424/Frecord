@@ -99,12 +99,22 @@
         app:layout_constraintTop_toTopOf="@+id/rvMsg" />
 
     <ImageView
-        android:id="@+id/icMsgBox"
+        android:id="@+id/btnMsgBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_msg" />
+
+    <include
+        android:id="@+id/layoutEdit"
+        layout="@layout/layout_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

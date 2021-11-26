@@ -12,7 +12,7 @@
         <item>공원</item>
         <item>파티</item>
         <item>여행</item>
-        <item>길거리</item>
+        <item>학원</item>
     </string-array>
     <string-array name="feelingList">
         <item>직접 입력</item>

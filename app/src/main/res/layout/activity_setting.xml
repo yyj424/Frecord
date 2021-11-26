@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/textView25"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/more_light_gray"
+        android:gravity="center"
+        android:padding="9dp"
+        android:text="설정"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="?android:listDivider"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView25">
+
+        <TextView
+            android:id="@+id/tvHelp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background='?attr/selectableItemBackground'
+            android:clickable="true"
+            android:onClick="onClick"
+            android:padding="20dp"
+            android:text="도움말"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvDefaultSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background='?attr/selectableItemBackground'
+            android:clickable="true"
+            android:onClick="onClick"
+            android:padding="20dp"
+            android:text="기본 설정"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvPwSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background='?attr/selectableItemBackground'
+            android:clickable="true"
+            android:onClick="onClick"
+            android:padding="20dp"
+            android:text="비밀번호 설정"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvLicense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background='?attr/selectableItemBackground'
+            android:clickable="true"
+            android:onClick="onClick"
+            android:padding="20dp"
+            android:text="오픈소스 라이선스"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvHelpDev"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background='?attr/selectableItemBackground'
+            android:clickable="true"
+            android:onClick="onClick"
+            android:padding="20dp"
+            android:text="개발자 도와주기"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/textView26"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
