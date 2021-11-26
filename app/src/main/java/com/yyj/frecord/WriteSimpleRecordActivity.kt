@@ -2,6 +2,7 @@ package com.yyj.frecord
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,9 @@ import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_add_simple_record.*
 import kotlinx.android.synthetic.main.dialog_record_setting.view.*
 
-class AddSimpleRecordActivity : AppCompatActivity() {
+class WriteSimpleRecordActivity : AppCompatActivity() {
+    private lateinit var dbHelper : DBHelper
+    private lateinit var db : SQLiteDatabase
     private lateinit var dialog : AlertDialog
     private var locked = false
     private var place: String? = null
@@ -21,6 +24,11 @@ class AddSimpleRecordActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_simple_record)
+        dbHelper = DBHelper(this)
+        db = dbHelper.writableDatabase
+        if (intent.hasExtra("id")) {
+            getRecord()
+        }
         setSeekBar()
         setSpinners()
         setSettingDialog()
@@ -34,11 +42,11 @@ class AddSimpleRecordActivity : AppCompatActivity() {
         seekBarInSimple.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
                 when (p1) {
-                    0 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb0)
-                    1 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb1)
-                    2 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb2)
-                    3 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb3)
-                    4 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@AddSimpleRecordActivity, R.drawable.ic_thumb4)
+                    0 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@WriteSimpleRecordActivity, R.drawable.ic_thumb0)
+                    1 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@WriteSimpleRecordActivity, R.drawable.ic_thumb1)
+                    2 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@WriteSimpleRecordActivity, R.drawable.ic_thumb2)
+                    3 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@WriteSimpleRecordActivity, R.drawable.ic_thumb3)
+                    4 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@WriteSimpleRecordActivity, R.drawable.ic_thumb4)
                 }
             }
             override fun onStartTrackingTouch(p0: SeekBar?) {}
@@ -86,7 +94,7 @@ class AddSimpleRecordActivity : AppCompatActivity() {
         view.tvModeSetting.text = "자유기록"
         view.btnChangeMode.setOnClickListener {
             dialog.dismiss()
-            val intent = Intent(this, AddRecordActivity::class.java)
+            val intent = Intent(this, WriteRecordActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -104,5 +112,17 @@ class AddSimpleRecordActivity : AppCompatActivity() {
         }
         builder.setView(view)
         dialog = builder.create()
+    }
+
+    override fun onBackPressed() {
+        saveRecord()
+    }
+
+    private fun saveRecord() {
+
+    }
+
+    private fun getRecord() {
+
     }
 }

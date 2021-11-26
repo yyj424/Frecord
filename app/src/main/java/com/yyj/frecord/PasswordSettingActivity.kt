@@ -27,7 +27,7 @@ class PasswordSettingActivity : AppCompatActivity() {
                         apply()
                     }
                     if (intent.getStringExtra("from") == "record") {
-                        val intent = Intent(this, AddRecordActivity::class.java)
+                        val intent = Intent(this, WriteRecordActivity::class.java)
                         setResult(RESULT_OK, intent)
                     }
                     finish()

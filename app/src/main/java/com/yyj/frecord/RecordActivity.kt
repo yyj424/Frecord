@@ -69,16 +69,6 @@ class RecordActivity : Fragment() {
         }
         rvRecord.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.VERTICAL, false)
 
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목1", System.currentTimeMillis(), true, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목2", System.currentTimeMillis(), false, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목3", System.currentTimeMillis(), false, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목4", System.currentTimeMillis(), false, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목5", System.currentTimeMillis(), true, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목6", System.currentTimeMillis(), false, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목7", System.currentTimeMillis(), true, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목8", System.currentTimeMillis(), true, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목9", System.currentTimeMillis(), false, false))
-//        rdList.add(RecordData(0, "오늘의 기분 및 제목10", System.currentTimeMillis(), false, false))
 
         setAdapter(false)
     }
@@ -101,7 +91,7 @@ class RecordActivity : Fragment() {
 
     private fun setButton() {
         btnAddRecord.setOnClickListener {
-            val intent = Intent(ctx, AddSimpleRecordActivity::class.java)
+            val intent = Intent(ctx, WriteSimpleRecordActivity::class.java)
             startActivity(intent)
         }
         btnEditDel.setOnClickListener {
