@@ -33,7 +33,7 @@
         <activity android:name=".HelpActivity"/>
         <activity android:name=".PasswordSettingActivity"/>
         <activity android:name=".DefaultSettingActivity"/>
-        <activity android:name=".OpenSourceActivity"/>
+        <activity android:name=".LicenseActivity"/>
     </application>
 
 </manifest>
