@@ -3,11 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/more_light_gray">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -16,32 +19,95 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="40dp"
+            android:background="@drawable/bg_add_layout"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:layout_weight="1">
 
-                <CheckBox
-                    android:id="@+id/checkBox1"
+                <TextView
+                    android:id="@+id/textView11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="랜덤" />
+                    android:fontFamily="@font/pretendard_bold"
+                    android:text="메시지 내용"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    app:layout_constraintStart_toEndOf="@+id/textView11"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <CheckBox
+                        android:id="@+id/checkBox1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_checkbox"
+                        android:button="@null"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView14"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="랜덤"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/checkBox1"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <EditText
+                    android:id="@+id/etSendMsgContent"
+                    style="@style/EditTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_editttext"
+                    android:ems="10"
+                    android:hint="ex\u0029오늘 하루도 힘내자!"
+                    android:inputType="textMultiLine|text"
+                    android:padding="5dp"
+                    android:textColorHint="@color/light_gray"
+                    android:textSize="17sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/llSendMsgName" />
 
                 <LinearLayout
                     android:id="@+id/llSendMsgName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
                     <TextView
                         android:id="@+id/tvSendMsgUserName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="userName" />
+                        android:layout_marginEnd="5dp"
+                        android:text="예진"
+                        android:textSize="17sp" />
 
                     <RadioGroup
                         android:id="@+id/rgUserName"
@@ -54,78 +120,176 @@
                             android:id="@+id/rbtn0"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:button="@null"
                             android:checked="true"
-                            android:text="님" />
+                            android:padding="5dp"
+                            android:text="아/야,"
+                            android:textAlignment="center"
+                            android:textColor="@drawable/selector_radio_txt"
+                            android:textSize="17sp" />
 
                         <RadioButton
                             android:id="@+id/rbtn1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="아/야" />
+                            android:layout_marginEnd="5dp"
+                            android:button="@null"
+                            android:paddingStart="12dp"
+                            android:paddingTop="5dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="5dp"
+                            android:text=","
+                            android:textAlignment="center"
+                            android:textColor="@drawable/selector_radio_txt"
+                            android:textSize="17sp" />
 
                         <RadioButton
                             android:id="@+id/rbtn2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="이름 없음" />
+                            android:button="@null"
+                            android:padding="5dp"
+                            android:text="이름 없음"
+                            android:textAlignment="center"
+                            android:textColor="@drawable/selector_radio_txt"
+                            android:textSize="17sp" />
                     </RadioGroup>
                 </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <EditText
-                    android:id="@+id/etSendMsgContent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPersonName" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="20dp"
+                android:layout_weight="1">
 
                 <LinearLayout
-                    android:id="@+id/llSendMsgDate"
+                    android:id="@+id/linearLayout3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView13">
 
-                    <Button
-                        android:id="@+id/btnPickDate"
+                    <LinearLayout
+                        android:id="@+id/llSendMsgDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Button" />
+                        android:layout_marginEnd="20dp"
+                        android:clickable="true"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tvSendMsgDate"
+                        <ImageView
+                            android:id="@+id/btnPickDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:paddingStart="10dp"
+                            android:paddingTop="5dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="5dp"
+                            app:srcCompat="@drawable/ic_select_date" />
+
+                        <TextView
+                            android:id="@+id/tvSendMsgDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:text="2021. 11. 21"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="TextView" />
+                        android:layout_gravity="center">
+
+                        <TextView
+                            android:id="@+id/textView15"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="5dp"
+                            android:text="랜덤"
+                            android:textSize="16sp"
+                            app:layout_constraintBottom_toBottomOf="@+id/checkBox2"
+                            app:layout_constraintStart_toEndOf="@+id/checkBox2"
+                            app:layout_constraintTop_toTopOf="@+id/checkBox2" />
+
+                        <CheckBox
+                            android:id="@+id/checkBox2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_checkbox"
+                            android:button="@null"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                 </LinearLayout>
 
-                <CheckBox
-                    android:id="@+id/checkBox2"
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/pretendard_bold"
+                    android:text="보낼 시간"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TimePicker
+                    android:id="@+id/timePicker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="20dp"
-                    android:layout_weight="1"
-                    android:text="랜덤" />
-            </LinearLayout>
+                    android:layout_marginTop="5dp"
+                    android:timePickerMode="spinner"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
-            <TimePicker
-                android:id="@+id/timePicker"
-                android:layout_width="243dp"
-                android:layout_height="wrap_content"
-                android:timePickerMode="spinner" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Button
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btnSaveMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Button" />
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_ripple_btn"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="100dp"
+                    android:layout_marginBottom="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_send" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="40dp">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
 
