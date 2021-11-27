@@ -1,6 +1,7 @@
 package com.yyj.frecord
 
 import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -18,14 +20,17 @@ class WriteRecordActivity : AppCompatActivity() {
     private lateinit var dbHelper : DBHelper
     private lateinit var db : SQLiteDatabase
     private lateinit var dialog : AlertDialog
-    private var locked = false
+    private var locked = 0
     private var backPressedTime : Long = 0
+    private val id = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_record)
         dbHelper = DBHelper(this)
         db = dbHelper.writableDatabase
         if (intent.hasExtra("id")) {
+            intent.getIntExtra("id", -1)
             getRecord()
         }
         setSeekBar()
@@ -67,7 +72,7 @@ class WriteRecordActivity : AppCompatActivity() {
             finish()
         }
         view.btnLockSetting.setOnClickListener {
-            locked = if (!locked) {
+            if (locked == 0) {
                 val sharedPref = this.getSharedPreferences("setting", Context.MODE_PRIVATE)
                 if (sharedPref.getString("password", null) == null) {
                     val intent = Intent(this, PasswordSettingActivity::class.java)
@@ -77,10 +82,11 @@ class WriteRecordActivity : AppCompatActivity() {
                 else {
                     view.ivLockSetting.setImageResource(R.drawable.ic_lock)
                 }
-                true
-            } else {
+                locked = 1
+            }
+            else {
                 view.ivLockSetting.setImageResource(R.drawable.ic_unlock)
-                false
+                locked = 0
             }
         }
         view.btnDeleteRecord.setOnClickListener {
@@ -91,19 +97,40 @@ class WriteRecordActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        Log.d("yyj", "backPress")
         if (System.currentTimeMillis() - backPressedTime > 2000) {
             backPressedTime = System.currentTimeMillis()
-            saveRecord()
+            saveRecord() //insert 부분 해결
         }
-        saveRecord()
+        else {
+            finish()
+        }
     }
 
     private fun saveRecord() {
+        val values = ContentValues()
+        values.put(DBHelper.REC_COL_SCORE, seekBarInFree.progress)
+        values.put(DBHelper.REC_COL_TITLE, etRecordTitle.text.toString())
+        values.put(DBHelper.REC_COL_CONTENT, etRecordContent.text.toString())
+        values.put(DBHelper.REC_COL_DATE, System.currentTimeMillis() / 1000L)
+        values.put(DBHelper.REC_COL_LOCK, locked)
 
+        if (id == -1) {
+            if (checkUpdate()) {
+                val whereClause = "_id=?"
+                val whereArgs = arrayOf(id.toString())
+                db.update(DBHelper.REC_TABLE, values, whereClause, whereArgs)
+            }
+            else {
+                db.insert(DBHelper.REC_TABLE, null, values)
+            }
+        }
     }
 
     private fun getRecord() {
 
+    }
+
+    private fun checkUpdate() : Boolean {
+        return false
     }
 }
