@@ -22,10 +22,9 @@ class WriteRecordActivity : AppCompatActivity() {
     private lateinit var dbHelper : DBHelper
     private lateinit var db : SQLiteDatabase
     private lateinit var dialog : AlertDialog
-    private val record = RecordData(-1, -1, null, null, -1, 0, 0, null, null, null, null, false)
+    private var record = RecordData(-1, -1, null, null, -1, 0, 0, null, null, null, null, false)
     private var locked = 0
     private var backPressedTime : Long = 0
-    private val id = -1
     private var inserted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,8 +32,8 @@ class WriteRecordActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_record)
         dbHelper = DBHelper(this)
         db = dbHelper.writableDatabase
-        if (intent.hasExtra("id")) {
-            intent.getIntExtra("id", -1)
+        if (intent.hasExtra("record")) {
+            record = intent.getParcelableExtra<RecordData>("record")!!
             getRecord()
         }
         setSeekBar()
@@ -72,6 +71,7 @@ class WriteRecordActivity : AppCompatActivity() {
         view.tvModeSetting.text = "간편기록"
         view.btnChangeMode.setOnClickListener {
             dialog.dismiss()
+            db.close()
             val intent = Intent(this, WriteSimpleRecordActivity::class.java)
             startActivity(intent)
             finish()
@@ -94,14 +94,15 @@ class WriteRecordActivity : AppCompatActivity() {
                 locked = 0
             }
         }
-        if (id != -1) {
+        if (record.id != -1) {
             if (record.locked == 1) {
                 locked = 1
                 view.ivLockSetting.setImageResource(R.drawable.ic_lock)
             }
             view.btnDeleteRecord.visibility = View.VISIBLE
             view.btnDeleteRecord.setOnClickListener {
-                db.execSQL("DELETE FROM ${DBHelper.REC_TABLE} WHERE _id = $id")
+                db.execSQL("DELETE FROM ${DBHelper.REC_TABLE} WHERE _id = ${record.id}")
+                db.close()
                 finish()
             }
         }
@@ -117,6 +118,7 @@ class WriteRecordActivity : AppCompatActivity() {
             Log.d("yyjLog", "saved!!!!")
         }
         else {
+            db.close()
             finish()
         }
     }
@@ -130,14 +132,16 @@ class WriteRecordActivity : AppCompatActivity() {
         values.put(DBHelper.REC_COL_LOCK, locked)
         values.put(DBHelper.REC_COL_SIMPLE, 0)
 
-        if (id != -1 || inserted) {
+        if (record.id != -1 || inserted) {
+            Log.d("yyjLog", "update")
             if (checkUpdate()) {
                 val whereClause = "_id=?"
-                val whereArgs = arrayOf(id.toString())
+                val whereArgs = arrayOf(record.id.toString())
                 db.update(DBHelper.REC_TABLE, values, whereClause, whereArgs)
             }
         }
         else {
+            Log.d("yyjLog", "insert")
             db.insert(DBHelper.REC_TABLE, null, values)
             inserted = true
             record.score = seekBarInFree.progress
@@ -149,16 +153,6 @@ class WriteRecordActivity : AppCompatActivity() {
 
     @SuppressLint("Range")
     private fun getRecord() {
-        val columns = arrayOf(DBHelper.REC_COL_ID, DBHelper.REC_COL_SCORE, DBHelper.REC_COL_TITLE, DBHelper.REC_COL_CONTENT, DBHelper.REC_COL_LOCK)
-        val selection = "_id=?"
-        val selectArgs = arrayOf(id.toString())
-        val c : Cursor = db.query(DBHelper.REC_TABLE, columns, selection, selectArgs, null, null, null)
-        c.moveToFirst()
-        record.score = c.getInt(c.getColumnIndex("score"))
-        record.title = c.getString(c.getColumnIndex("title"))
-        record.content = c.getString(c.getColumnIndex("content"))
-        record.locked = c.getInt(c.getColumnIndex("locked"))
-        c.close()
         seekBarInFree.progress = record.score
         when (record.score) {
             0 -> seekBarInFree.thumb = ContextCompat.getDrawable(this@WriteRecordActivity, R.drawable.ic_thumb0)
@@ -169,6 +163,7 @@ class WriteRecordActivity : AppCompatActivity() {
         }
         etRecordTitle.setText(record.title)
         etRecordContent.setText(record.content)
+        etRecordContent.setSelection(etRecordContent.text.length)
     }
 
     private fun checkUpdate() : Boolean {

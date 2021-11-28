@@ -26,10 +26,9 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
     private lateinit var dialog : AlertDialog
     private var record = RecordData(-1, -1, null, null, -1, 0, 1, null, null, null, null, false)
     private var locked = 0
-    private var place: String? = null
-    private var feeling: String? = null
+    private var place = 0
+    private var feeling = 0
     private var backPressedTime : Long = 0
-    private val id = -1
     private var inserted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,12 +36,13 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_simple_record)
         dbHelper = DBHelper(this)
         db = dbHelper.writableDatabase
-        if (intent.hasExtra("id")) {
-            getRecord()
-        }
         setSeekBar()
         setSpinners()
         setSettingDialog()
+        if (intent.hasExtra("record")) {
+            record = intent.getParcelableExtra<RecordData>("record")!!
+            getRecord()
+        }
 
         ivSimpleRecordSetting.setOnClickListener {
             dialog.show()
@@ -70,14 +70,12 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         placeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
                 if (pos == 0) {
-                    etSimpleRecordWhere.setText("")
                     etSimpleRecordWhere.visibility = View.VISIBLE
-                    place = null
                 }
                 else {
                     etSimpleRecordWhere.visibility = View.GONE
-                    place = placeSpinner.selectedItem.toString()
                 }
+                place = pos
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
@@ -86,14 +84,12 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         feelingSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
                 if (pos == 0) {
-                    etSimpleRecordFeeling.setText("")
                     etSimpleRecordFeeling.visibility = View.VISIBLE
-                    feeling = null
                 }
                 else {
                     etSimpleRecordFeeling.visibility = View.GONE
-                    feeling = feelingSpinner.selectedItem.toString()
                 }
+                feeling = pos
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
@@ -111,6 +107,10 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         view.tvModeSetting.text = "자유기록"
         view.btnChangeMode.setOnClickListener {
             dialog.dismiss()
+            if (record.id != -1) {
+                db.execSQL("DELETE FROM ${DBHelper.REC_TABLE} WHERE _id = ${record.id}")
+            }
+            db.close()
             val intent = Intent(this, WriteRecordActivity::class.java)
             startActivity(intent)
             finish()
@@ -133,14 +133,15 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
                 locked = 0
             }
         }
-        if (id != -1) {
+        if (record.id != -1) {
             if (record.locked == 1) {
                 locked = 1
                 view.ivLockSetting.setImageResource(R.drawable.ic_lock)
             }
             view.btnDeleteRecord.visibility = View.VISIBLE
             view.btnDeleteRecord.setOnClickListener {
-                db.execSQL("DELETE FROM ${DBHelper.REC_TABLE} WHERE _id = $id")
+                db.execSQL("DELETE FROM ${DBHelper.REC_TABLE} WHERE _id = ${record.id}")
+                db.close()
                 finish()
             }
         }
@@ -153,9 +154,10 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         if (System.currentTimeMillis() - backPressedTime > 5000) {
             backPressedTime = System.currentTimeMillis()
             saveRecord()
-            Log.d("yyjLog", "saved!!!!")
+            Log.d("yyjLog", "inserted" + inserted)
         }
         else {
+            db.close()
             finish()
         }
     }
@@ -164,22 +166,34 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         val values = ContentValues()
         values.put(DBHelper.REC_COL_SCORE, seekBarInSimple.progress)
         values.put(DBHelper.REC_COL_TITLE, etSimpleRecordTitle.text.toString())
-        values.put(DBHelper.REC_COL_WHR, etSimpleRecordWhere.text.toString())
+        if (place != 0) {
+            values.put(DBHelper.REC_COL_WHR, place.toString())
+        }
+        else {
+            values.put(DBHelper.REC_COL_WHR, "0" + etSimpleRecordWhere.text.toString())
+        }
         values.put(DBHelper.REC_COL_WHAT, etSimpleRecordWhat.text.toString())
-        values.put(DBHelper.REC_COL_FEELING, etSimpleRecordFeeling.text.toString())
+        if (feeling != 0) {
+            values.put(DBHelper.REC_COL_FEELING, feeling.toString())
+        }
+        else {
+            values.put(DBHelper.REC_COL_FEELING, "0" + etSimpleRecordFeeling.text.toString())
+        }
         values.put(DBHelper.REC_COL_WHY, etSimpleRecordWhy.text.toString())
         values.put(DBHelper.REC_COL_DATE, System.currentTimeMillis() / 1000L)
         values.put(DBHelper.REC_COL_LOCK, locked)
         values.put(DBHelper.REC_COL_SIMPLE, 1)
 
-        if (id != -1 || inserted) {
+        if (record.id != -1 || inserted) {
+            Log.d("yyjLog", "update")
             if (checkUpdate()) {
                 val whereClause = "_id=?"
-                val whereArgs = arrayOf(id.toString())
+                val whereArgs = arrayOf(record.id.toString())
                 db.update(DBHelper.REC_TABLE, values, whereClause, whereArgs)
             }
         }
         else {
+            Log.d("yyjLog", "insert")
             db.insert(DBHelper.REC_TABLE, null, values)
             inserted = true
             record.score = seekBarInSimple.progress
@@ -192,22 +206,7 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("Range")
     private fun getRecord() {
-        val columns = arrayOf(DBHelper.REC_COL_ID, DBHelper.REC_COL_SCORE, DBHelper.REC_COL_TITLE, DBHelper.REC_COL_WHR, DBHelper.REC_COL_WHAT,
-            DBHelper.REC_COL_FEELING, DBHelper.REC_COL_WHY, DBHelper.REC_COL_LOCK)
-        val selection = "_id=?"
-        val selectArgs = arrayOf(id.toString())
-        val c : Cursor = db.query(DBHelper.REC_TABLE, columns, selection, selectArgs, null, null, null)
-        c.moveToFirst()
-        record.score = c.getInt(c.getColumnIndex("score"))
-        record.title = c.getString(c.getColumnIndex("title"))
-        record.where = c.getString(c.getColumnIndex("where"))
-        record.what = c.getString(c.getColumnIndex("what"))
-        record.feeling = c.getString(c.getColumnIndex("feeling"))
-        record.why = c.getString(c.getColumnIndex("why"))
-        record.locked = c.getInt(c.getColumnIndex("locked"))
-        c.close()
         seekBarInSimple.progress = record.score
         when (record.score) {
             0 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@WriteSimpleRecordActivity, R.drawable.ic_thumb0)
@@ -217,9 +216,21 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
             4 -> seekBarInSimple.thumb = ContextCompat.getDrawable(this@WriteSimpleRecordActivity, R.drawable.ic_thumb4)
         }
         etSimpleRecordTitle.setText(record.title)
-        etSimpleRecordWhere.setText(record.where)
+        if (record.where!![0] == '0'){
+            val token = record.where!!.split('0')
+            etSimpleRecordWhere.setText(token[1])
+        }
+        else {
+            placeSpinner.setSelection(record.where!!.toInt())
+        }
         etSimpleRecordWhat.setText(record.what)
-        etSimpleRecordFeeling.setText(record.feeling)
+        if (record.feeling!![0] == '0'){
+            val token = record.feeling!!.split('0')
+            etSimpleRecordFeeling.setText(token[1])
+        }
+        else {
+            feelingSpinner.setSelection(record.feeling!!.toInt())
+        }
         etSimpleRecordWhy.setText(record.why)
     }
 

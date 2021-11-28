@@ -1,6 +1,7 @@
 package com.yyj.frecord
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_record.*
 import kotlinx.android.synthetic.main.dialog_record_setting.view.*
+import kotlinx.android.synthetic.main.dialog_unlock.view.*
 import kotlinx.android.synthetic.main.layout_edit.*
 
 class RecordActivity : Fragment() {
@@ -57,19 +59,8 @@ class RecordActivity : Fragment() {
         setButton()
     }
 
-    @SuppressLint("Range")
     private fun initList() {
-        rdList.clear()
-        val c : Cursor = db.rawQuery("SELECT * FROM ${DBHelper.REC_TABLE}", null)
-        while (c.moveToNext()) {
-            val id = c.getInt(c.getColumnIndex("_id"))
-            val title = c.getString(c.getColumnIndex("title"))
-            val date = c.getInt(c.getColumnIndex("date")) * 1000L
-            val lock = c.getInt(c.getColumnIndex("lock"))
-            val simple = c.getInt(c.getColumnIndex("simple"))
-            rdList.add(RecordData(id, -1, title, null, date, lock, simple, null, null, null, null, false))
-        }
-        c.close()
+        setListData()
         itemCheckListener = object : RecordListAdapter.OnItemClickListener {
             override fun onClick(view: View, position: Int) {
                 val cbEdit = view.findViewById<CheckBox>(R.id.cbEditRecord)
@@ -78,13 +69,18 @@ class RecordActivity : Fragment() {
         }
         itemClickListener = object : RecordListAdapter.OnItemClickListener {
             override fun onClick(view: View, position: Int) {
-                val intent : Intent = if (rdList[position].simple == 0) {
-                    Intent(ctx, WriteRecordActivity::class.java)
-                } else {
-                    Intent(ctx, WriteSimpleRecordActivity::class.java)
+                if (rdList[position].locked == 1) {
+                    alertDialog(position)
                 }
-                intent.putExtra("id", rdList[position].id)
-                startActivity(intent)
+                else {
+                    val intent : Intent = if (rdList[position].simple == 0) {
+                        Intent(ctx, WriteRecordActivity::class.java)
+                    } else {
+                        Intent(ctx, WriteSimpleRecordActivity::class.java)
+                    }
+                    intent.putExtra("record", rdList[position])
+                    startActivity(intent)
+                }
             }
         }
         itemLongClickListener = object : RecordListAdapter.OnItemLongClickListener {
@@ -99,6 +95,63 @@ class RecordActivity : Fragment() {
         }
         rvRecord.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.VERTICAL, false)
         setAdapter(false)
+    }
+
+    @SuppressLint("Range")
+    fun setListData() {
+        rdList.clear()
+        val c : Cursor = db.rawQuery("SELECT * FROM ${DBHelper.REC_TABLE}", null)
+        while (c.moveToNext()) {
+            val id = c.getInt(c.getColumnIndex(DBHelper.REC_COL_ID))
+            val score = c.getInt(c.getColumnIndex(DBHelper.REC_COL_SCORE))
+            val title = c.getString(c.getColumnIndex(DBHelper.REC_COL_TITLE))
+            val content = c.getString(c.getColumnIndex(DBHelper.REC_COL_CONTENT))
+            val date = c.getInt(c.getColumnIndex(DBHelper.REC_COL_DATE)) * 1000L
+            val lock = c.getInt(c.getColumnIndex(DBHelper.REC_COL_LOCK))
+            val simple = c.getInt(c.getColumnIndex(DBHelper.REC_COL_SIMPLE))
+            val where = c.getString(c.getColumnIndex(DBHelper.REC_COL_WHR))
+            val what = c.getString(c.getColumnIndex(DBHelper.REC_COL_WHAT))
+            val feeling = c.getString(c.getColumnIndex(DBHelper.REC_COL_FEELING))
+            val why = c.getString(c.getColumnIndex(DBHelper.REC_COL_WHY))
+            rdList.add(RecordData(id, score, title, content, date, lock, simple, where, what, feeling, why, false))
+        }
+        c.close()
+    }
+
+    private fun alertDialog(position : Int) {
+        var tryUnlock = 0
+        val builder = AlertDialog.Builder(ctx)
+        val view = LayoutInflater.from(ctx).inflate(R.layout.dialog_unlock, null)
+        view.tvUnlockHint.text = sharedPref.getString("hint", null)
+        val dialog = builder.setView(view)
+            .setCancelable(false)
+            .create()
+        dialog.show()
+        view.btnUnlockCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        view.btnUnlockConfirm.setOnClickListener {
+            tryUnlock++
+            if (view.etUnlockPw.text.toString() == sharedPref.getString(
+                    "password",
+                    null
+                )
+            ) {
+                dialog.dismiss()
+                val intent: Intent = if (rdList[position].simple == 0) {
+                    Intent(ctx, WriteRecordActivity::class.java)
+                } else {
+                    Intent(ctx, WriteSimpleRecordActivity::class.java)
+                }
+                intent.putExtra("record", rdList[position])
+                startActivity(intent)
+            } else {
+                if (tryUnlock == 5) {
+                    view.llUnlockHint.visibility = View.VISIBLE
+                }
+                view.tvUnlockCaution.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun setAdapter(edit : Boolean) {
@@ -136,6 +189,9 @@ class RecordActivity : Fragment() {
                     rdListIterator.remove()
                     db.execSQL("DELETE FROM ${DBHelper.REC_TABLE} WHERE _id = ${record.id}")
                 }
+            }
+            if (rdList.size == 0) {
+                llExplain.visibility = View.VISIBLE
             }
             if (checked) {
                 setAdapter(false)
