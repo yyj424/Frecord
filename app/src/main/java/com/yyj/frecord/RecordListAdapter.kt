@@ -73,6 +73,9 @@ class RecordListAdapter (private val context : Context, private val list : Array
             if (recordData.locked == 1) {
                 ivLock.visibility = View.VISIBLE
             }
+            else {
+                ivLock.visibility = View.GONE
+            }
             cbEdit.setOnCheckedChangeListener { _, isChecked ->
                 recordData.checked = isChecked
             }

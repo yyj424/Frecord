@@ -38,11 +38,11 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         db = dbHelper.writableDatabase
         setSeekBar()
         setSpinners()
-        setSettingDialog()
         if (intent.hasExtra("record")) {
             record = intent.getParcelableExtra<RecordData>("record")!!
             getRecord()
         }
+        setSettingDialog()
 
         ivSimpleRecordSetting.setOnClickListener {
             dialog.show()
