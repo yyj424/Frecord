@@ -1,15 +1,17 @@
 package com.yyj.frecord
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -20,9 +22,11 @@ class WriteRecordActivity : AppCompatActivity() {
     private lateinit var dbHelper : DBHelper
     private lateinit var db : SQLiteDatabase
     private lateinit var dialog : AlertDialog
+    private val record = RecordData(-1, -1, null, null, -1, 0, 0, null, null, null, null, false)
     private var locked = 0
     private var backPressedTime : Long = 0
     private val id = -1
+    private var inserted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +65,7 @@ class WriteRecordActivity : AppCompatActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_record_setting, null)
         val getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
+                locked = 1
                 view.ivLockSetting.setImageResource(R.drawable.ic_lock)
             }
         }
@@ -89,17 +94,27 @@ class WriteRecordActivity : AppCompatActivity() {
                 locked = 0
             }
         }
-        view.btnDeleteRecord.setOnClickListener {
-
+        if (id != -1) {
+            if (record.locked == 1) {
+                locked = 1
+                view.ivLockSetting.setImageResource(R.drawable.ic_lock)
+            }
+            view.btnDeleteRecord.visibility = View.VISIBLE
+            view.btnDeleteRecord.setOnClickListener {
+                db.execSQL("DELETE FROM ${DBHelper.REC_TABLE} WHERE _id = $id")
+                finish()
+            }
         }
         builder.setView(view)
         dialog = builder.create()
     }
 
     override fun onBackPressed() {
-        if (System.currentTimeMillis() - backPressedTime > 2000) {
+        Log.d("yyjLog", "back")
+        if (System.currentTimeMillis() - backPressedTime > 5000) {
             backPressedTime = System.currentTimeMillis()
-            saveRecord() //insert 부분 해결
+            saveRecord()
+            Log.d("yyjLog", "saved!!!!")
         }
         else {
             finish()
@@ -113,24 +128,54 @@ class WriteRecordActivity : AppCompatActivity() {
         values.put(DBHelper.REC_COL_CONTENT, etRecordContent.text.toString())
         values.put(DBHelper.REC_COL_DATE, System.currentTimeMillis() / 1000L)
         values.put(DBHelper.REC_COL_LOCK, locked)
+        values.put(DBHelper.REC_COL_SIMPLE, 0)
 
-        if (id == -1) {
+        if (id != -1 || inserted) {
             if (checkUpdate()) {
                 val whereClause = "_id=?"
                 val whereArgs = arrayOf(id.toString())
                 db.update(DBHelper.REC_TABLE, values, whereClause, whereArgs)
             }
-            else {
-                db.insert(DBHelper.REC_TABLE, null, values)
-            }
+        }
+        else {
+            db.insert(DBHelper.REC_TABLE, null, values)
+            inserted = true
+            record.score = seekBarInFree.progress
+            record.title = etRecordTitle.text.toString()
+            record.content = etRecordContent.text.toString()
+            record.locked = locked
         }
     }
 
+    @SuppressLint("Range")
     private fun getRecord() {
-
+        val columns = arrayOf(DBHelper.REC_COL_ID, DBHelper.REC_COL_SCORE, DBHelper.REC_COL_TITLE, DBHelper.REC_COL_CONTENT, DBHelper.REC_COL_LOCK)
+        val selection = "_id=?"
+        val selectArgs = arrayOf(id.toString())
+        val c : Cursor = db.query(DBHelper.REC_TABLE, columns, selection, selectArgs, null, null, null)
+        c.moveToFirst()
+        record.score = c.getInt(c.getColumnIndex("score"))
+        record.title = c.getString(c.getColumnIndex("title"))
+        record.content = c.getString(c.getColumnIndex("content"))
+        record.locked = c.getInt(c.getColumnIndex("locked"))
+        c.close()
+        seekBarInFree.progress = record.score
+        when (record.score) {
+            0 -> seekBarInFree.thumb = ContextCompat.getDrawable(this@WriteRecordActivity, R.drawable.ic_thumb0)
+            1 -> seekBarInFree.thumb = ContextCompat.getDrawable(this@WriteRecordActivity, R.drawable.ic_thumb1)
+            2 -> seekBarInFree.thumb = ContextCompat.getDrawable(this@WriteRecordActivity, R.drawable.ic_thumb2)
+            3 -> seekBarInFree.thumb = ContextCompat.getDrawable(this@WriteRecordActivity, R.drawable.ic_thumb3)
+            4 -> seekBarInFree.thumb = ContextCompat.getDrawable(this@WriteRecordActivity, R.drawable.ic_thumb4)
+        }
+        etRecordTitle.setText(record.title)
+        etRecordContent.setText(record.content)
     }
 
     private fun checkUpdate() : Boolean {
+        if (record.score != seekBarInFree.progress) return true
+        if (record.title != etRecordTitle.text.toString()) return true
+        if (record.content != etRecordContent.text.toString()) return true
+        if (record.locked != locked) return true
         return false
     }
 }

@@ -62,7 +62,7 @@ class RecordListAdapter (private val context : Context, private val list : Array
             else {
                 cbEdit.visibility = View.GONE
             }
-            if (!TextUtils.isEmpty(recordData.title.trim())) {
+            if (!TextUtils.isEmpty(recordData.title?.trim())) {
                 tvTitle.text = recordData.title
                 tvDate.text = dateFormat.format(recordData.date)
             }
@@ -70,7 +70,7 @@ class RecordListAdapter (private val context : Context, private val list : Array
                 tvTitle.text = dateFormat.format(recordData.date)
                 tvDate.visibility = View.INVISIBLE
             }
-            if (recordData.locked) {
+            if (recordData.locked == 1) {
                 ivLock.visibility = View.VISIBLE
             }
             cbEdit.setOnCheckedChangeListener { _, isChecked ->
