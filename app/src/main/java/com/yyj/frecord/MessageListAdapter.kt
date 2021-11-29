@@ -48,7 +48,7 @@ class MessageListAdapter (private val context : Context, private val list : Arra
     inner class ViewHolder(view: View, private val edit : Boolean) : RecyclerView.ViewHolder(view) {
         private val tvDate : TextView = view.findViewById(R.id.tvMsgDate)
         private val cbEdit : CheckBox = view.findViewById(R.id.cbEditMsg)
-        private val dateFormat = SimpleDateFormat("yyyy. MM. dd. HH : mm")
+        private val dateFormat = SimpleDateFormat("yyyy. MM. dd.  HH:mm")
 
         fun getMessage(msgData: MessageData){
             if (edit) {

@@ -2,8 +2,10 @@ package com.yyj.frecord
 
 import android.app.*
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
@@ -13,12 +15,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_add_message.*
+import kotlinx.android.synthetic.main.activity_add_record.*
 import kotlinx.android.synthetic.main.dialog_datepicker.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class AddMessageActivity : AppCompatActivity() {
+    private lateinit var dbHelper : DBHelper
+    private lateinit var db : SQLiteDatabase
     private val channelId = "msg"
     private lateinit var dialog : AlertDialog
     private lateinit var intent : PendingIntent
@@ -32,6 +37,8 @@ class AddMessageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_message)
+        dbHelper = DBHelper(this)
+        db = dbHelper.writableDatabase
         val sharedPref = this.getSharedPreferences("setting", Context.MODE_PRIVATE)
         val userName = sharedPref.getString("name", "")
         tvSendMsgUserName.text = userName
@@ -46,11 +53,20 @@ class AddMessageActivity : AppCompatActivity() {
             calDate[3] = h
             calDate[4] = m
         }
-        rgUserName.setOnCheckedChangeListener { radioGroup, i ->
+        rgUserName.setOnCheckedChangeListener { _, i ->
             when (i) {
-                R.id.rbtn0 -> user = 0
-                R.id.rbtn1 -> user = 1
-                R.id.rbtn2 -> user = 2
+                R.id.rbtn0 -> {
+                    user = 0
+                    tvSendMsgUserName.visibility = View.VISIBLE
+                }
+                R.id.rbtn1 -> {
+                    user = 1
+                    tvSendMsgUserName.visibility = View.VISIBLE
+                }
+                R.id.rbtn2 -> {
+                    user = 2
+                    tvSendMsgUserName.visibility = View.GONE
+                }
             }
         }
         btnSaveMessage.setOnClickListener {
@@ -70,8 +86,11 @@ class AddMessageActivity : AppCompatActivity() {
                         setRandom(2)
                     }
                     if (alarmCalendar.timeInMillis > System.currentTimeMillis()) {
-                        setAlarm(setSendMsg(userName, isRandMsg))
-                        Log.d("yyjLog", "***alarm저장  : " + alarmCalendar.time +",,,msg: " + setSendMsg(userName, isRandMsg))
+                        val message = setSendMsg(userName, isRandMsg)
+                        val req = System.currentTimeMillis().toInt()
+                        setAlarm(message, req)
+                        saveMessage(message, req)
+                        db.close()
                         finish()
                     }
                     else {
@@ -101,14 +120,14 @@ class AddMessageActivity : AppCompatActivity() {
         dialog = builder.create()
     }
 
-    private fun setAlarm(message: String) {
+    private fun setAlarm(message: String, req: Int) {
         val alarmManager =
                 this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             intent = Intent(this, AlarmReceiver::class.java).let { intent ->
                 intent.putExtra("channelId", channelId)
                 intent.putExtra("message", message)
-                PendingIntent.getBroadcast(this, System.currentTimeMillis().toInt(), intent, FLAG_UPDATE_CURRENT)//flag를 id로
+                PendingIntent.getBroadcast(this, req, intent, FLAG_UPDATE_CURRENT)//flag를 id로
             }
         alarmManager.set(
             AlarmManager.RTC_WAKEUP,
@@ -192,5 +211,13 @@ class AddMessageActivity : AppCompatActivity() {
         else { //날짜
             alarmCalendar.add(Calendar.DAY_OF_MONTH, (1..30).random())
         }
+    }
+
+    private fun saveMessage(content: String, req: Int) {
+        val values = ContentValues()
+        values.put(DBHelper.MSG_COL_CONTENT, content)
+        values.put(DBHelper.MSG_COL_DATE, alarmCalendar.timeInMillis / 1000L)
+        values.put(DBHelper.MSG_COL_REQ, req)
+        db.insert(DBHelper.MSG_TABLE, null, values)
     }
 }

@@ -26,6 +26,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         const val MSG_COL_ID = "_id"
         const val MSG_COL_CONTENT = "content"
         const val MSG_COL_DATE = "date"
+        const val MSG_COL_REQ = "req"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -46,7 +47,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_V
         createTable = "CREATE TABLE $MSG_TABLE " +
                 "($MSG_COL_ID INTEGER PRIMARY KEY, " +
                 "$MSG_COL_CONTENT TEXT, " +
-                "$MSG_COL_DATE INTEGER);"
+                "$MSG_COL_DATE INTEGER, " +
+                "$MSG_COL_REQ INTEGER);"
         db?.execSQL(createTable)
     }
 

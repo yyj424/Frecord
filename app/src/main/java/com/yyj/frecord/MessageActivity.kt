@@ -1,7 +1,12 @@
 package com.yyj.frecord
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,11 +20,13 @@ import kotlinx.android.synthetic.main.layout_bottom.*
 import kotlinx.android.synthetic.main.layout_edit.*
 
 class MessageActivity : Fragment() {
-    private lateinit var msgListAdapter: MessageListAdapter
+    private lateinit var dbHelper : DBHelper
+    private lateinit var db : SQLiteDatabase
+    lateinit var msgListAdapter: MessageListAdapter
     private lateinit var ctx : Context
     private lateinit var itemCheckListener: MessageListAdapter.OnItemClickListener
     private lateinit var itemLongClickListener: MessageListAdapter.OnItemLongClickListener
-    private val msgList = arrayListOf<MessageData>()
+    val msgList = arrayListOf<MessageData>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -35,6 +42,8 @@ class MessageActivity : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        dbHelper = DBHelper(ctx)
+        db = dbHelper.writableDatabase
         icMenu1.setImageResource(R.drawable.ic_selected_view)
         icMenu2.setImageResource(R.drawable.ic_not_selected_view)
         val sharedPref = ctx.getSharedPreferences("setting", Context.MODE_PRIVATE)
@@ -47,13 +56,13 @@ class MessageActivity : Fragment() {
     }
 
     private fun initList() {
+        setListData()
         itemCheckListener = object : MessageListAdapter.OnItemClickListener {
             override fun onClick(view: View, position: Int) {
                 val cbDelete = view.findViewById<CheckBox>(R.id.cbEditMsg)
                 cbDelete.isChecked = !cbDelete.isChecked
             }
         }
-
         itemLongClickListener = object : MessageListAdapter.OnItemLongClickListener {
             override fun onLongClick(view: View, position: Int): Boolean {
                 if (layoutEdit.visibility == View.GONE) {
@@ -65,12 +74,22 @@ class MessageActivity : Fragment() {
             }
         }
         rvMsg.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.VERTICAL, false)
-
-//        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
-//        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
-//        msgList.add(MessageData(0, System.currentTimeMillis(), "", false))
-
         setAdapter(false)
+    }
+
+    @SuppressLint("Range")
+    fun setListData() {
+        msgList.clear()
+        val c : Cursor = db.rawQuery("SELECT _id, date, req FROM ${DBHelper.MSG_TABLE}", null)
+        while (c.moveToNext()) {
+            val date = c.getInt(c.getColumnIndex(DBHelper.MSG_COL_DATE)) * 1000L
+            if (date > System.currentTimeMillis()) {
+                val id = c.getInt(c.getColumnIndex(DBHelper.MSG_COL_ID))
+                val req = c.getInt(c.getColumnIndex(DBHelper.MSG_COL_REQ))
+                msgList.add(MessageData(id, date, null, req, false))
+            }
+        }
+        c.close()
     }
 
     private fun setAdapter(edit : Boolean) {
@@ -105,7 +124,18 @@ class MessageActivity : Fragment() {
                 if (msg.checked) {
                     checked = true
                     msgListIterator.remove()
-                    //db 삭제
+                    if (msg.date > System.currentTimeMillis()) {
+                        db.execSQL("DELETE FROM ${DBHelper.MSG_TABLE} WHERE _id = ${msg.id}")
+                        val intent = Intent(ctx, AlarmReceiver::class.java)
+                        val alarmManager =
+                            ctx.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                        val pendingIntent =
+                            PendingIntent.getService(context, msg.req!!, intent,
+                                PendingIntent.FLAG_NO_CREATE)
+                        if (pendingIntent != null && alarmManager != null) {
+                            alarmManager.cancel(pendingIntent)
+                        }
+                    }
                 }
             }
             if (checked) {

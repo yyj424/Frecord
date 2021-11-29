@@ -1,5 +1,8 @@
 package com.yyj.frecord
 
+import android.annotation.SuppressLint
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.view.View
 import android.widget.CheckBox
@@ -10,6 +13,8 @@ import kotlinx.android.synthetic.main.activity_message_box.layoutEdit
 import kotlinx.android.synthetic.main.layout_edit.*
 
 class MessageBoxActivity : AppCompatActivity() {
+    private lateinit var dbHelper : DBHelper
+    private lateinit var db : SQLiteDatabase
     private lateinit var msgBoxAdapter: MessageBoxAdapter
     private val msgList = arrayListOf<MessageData>()
     lateinit var itemCheckListener: MessageBoxAdapter.OnItemClickListener
@@ -18,6 +23,8 @@ class MessageBoxActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message_box)
+        dbHelper = DBHelper(this)
+        db = dbHelper.writableDatabase
         initList()
         setButton()
     }
@@ -39,12 +46,29 @@ class MessageBoxActivity : AppCompatActivity() {
             }
         }
         rvMsgBox.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-
-        msgList.add(MessageData(0, System.currentTimeMillis(), "메시지1111111111111111111", false))
-        msgList.add(MessageData(0, System.currentTimeMillis(), "메시지2\n메시지", false))
-        msgList.add(MessageData(0, System.currentTimeMillis(), "메시지3", false))
-
         setAdapter(false)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onResume() {
+        super.onResume()
+        setListData()
+        msgBoxAdapter.notifyDataSetChanged()
+    }
+
+    @SuppressLint("Range")
+    fun setListData() {
+        msgList.clear()
+        val c : Cursor = db.rawQuery("SELECT * FROM ${DBHelper.MSG_TABLE}", null)
+        while (c.moveToNext()) {
+            val date = c.getInt(c.getColumnIndex(DBHelper.MSG_COL_DATE)) * 1000L
+            if (date <= System.currentTimeMillis()) {
+                val id = c.getInt(c.getColumnIndex(DBHelper.MSG_COL_ID))
+                val content = c.getString(c.getColumnIndex(DBHelper.MSG_COL_CONTENT))
+                msgList.add(MessageData(id, date, content, null, false))
+            }
+        }
+        c.close()
     }
 
     private fun setAdapter(edit : Boolean) {
@@ -69,7 +93,7 @@ class MessageBoxActivity : AppCompatActivity() {
                 if (msg.checked) {
                     checked = true
                     msgListIterator.remove()
-                    //db 삭제
+                    db.execSQL("DELETE FROM ${DBHelper.MSG_TABLE} WHERE _id = ${msg.id}")
                 }
             }
             if (checked) {
@@ -86,5 +110,10 @@ class MessageBoxActivity : AppCompatActivity() {
             }
             setAdapter(false)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        db.close()
     }
 }
