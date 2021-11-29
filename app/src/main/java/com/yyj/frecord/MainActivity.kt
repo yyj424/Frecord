@@ -1,9 +1,11 @@
 package com.yyj.frecord
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.android.synthetic.main.activity_record.*
@@ -23,14 +25,37 @@ class MainActivity : AppCompatActivity() {
         name = sharedPref.getString("name", null).toString()
     }
 
-    override fun onRestart() {
-        super.onRestart()
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onResume() {
+        super.onResume()
+        val messageFragment = supportFragmentManager.findFragmentByTag("f0")
+        val recordFragment = supportFragmentManager.findFragmentByTag("f1")
+        if (recordFragment != null) {
+            recordFragment as RecordActivity
+            recordFragment.setListData()
+            recordFragment.recordListAdapter.notifyDataSetChanged()
+            if (recordFragment.rdList.size > 0) {
+                recordFragment.llExplain.visibility = View.INVISIBLE
+            }
+            else {
+                recordFragment.llExplain.visibility = View.VISIBLE
+            }
+        }
+        if (messageFragment != null) {
+            messageFragment as MessageActivity
+            messageFragment.setListData()
+            messageFragment.msgListAdapter.notifyDataSetChanged()
+            if (messageFragment.msgList.size > 0) {
+                messageFragment.tvMsgExplain.visibility = View.INVISIBLE
+            }
+            else {
+                messageFragment.tvMsgExplain.visibility = View.VISIBLE
+            }
+        }
         if (name != sharedPref.getString("name", null).toString()) {
             name = sharedPref.getString("name", null).toString()
-            val messageFragment = supportFragmentManager.findFragmentByTag("f0") as MessageActivity
-            val recordFragment = supportFragmentManager.findFragmentByTag("f1") as RecordActivity
-            messageFragment.tvToUserName.text = name
-            recordFragment.tvUserName.text = name
+            recordFragment?.tvUserName?.text = name
+            messageFragment?.tvToUserName?.text = name
         }
     }
 }
