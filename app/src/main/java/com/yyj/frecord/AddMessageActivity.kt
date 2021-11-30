@@ -106,14 +106,16 @@ class AddMessageActivity : AppCompatActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_datepicker, null)
         val calView = view.calendarView
         val dateFormat = SimpleDateFormat("yyyy. MM. dd")
+        val selectedDate = Calendar.getInstance()
         tvSendMsgDate.text = dateFormat.format(calView.date)
         calView.minDate = System.currentTimeMillis() - 1000
         calView.setOnDateChangeListener { _, y, m, d ->
             calDate[0] = y
             calDate[1] = m
             calDate[2] = d
-            val date = y.toString() + ". " + (m + 1).toString() + ". " + d.toString()
-            tvSendMsgDate.text = date
+            selectedDate.set(y, m, d)
+            calView.date = selectedDate.timeInMillis
+            tvSendMsgDate.text = dateFormat.format(calView.date)
             dialog.dismiss()
         }
         builder.setView(view)

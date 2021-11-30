@@ -116,6 +116,7 @@ class RecordActivity : Fragment() {
             rdList.add(RecordData(id, score, title, content, date, lock, simple, where, what, feeling, why, false))
         }
         c.close()
+        rdList.sortByDescending { recordData -> recordData.date }
     }
 
     private fun alertDialog(position : Int) {

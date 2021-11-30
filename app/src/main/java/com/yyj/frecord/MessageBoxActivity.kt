@@ -69,6 +69,7 @@ class MessageBoxActivity : AppCompatActivity() {
             }
         }
         c.close()
+        msgList.sortByDescending { messageData -> messageData.date }
     }
 
     private fun setAdapter(edit : Boolean) {
