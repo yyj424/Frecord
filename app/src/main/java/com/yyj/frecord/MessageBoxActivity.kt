@@ -69,7 +69,8 @@ class MessageBoxActivity : AppCompatActivity() {
             }
         }
         c.close()
-        msgList.sortByDescending { messageData -> messageData.date }
+        msgList.sortBy { messageData -> messageData.date }
+        rvMsgBox.scrollToPosition(msgList.size - 1)
     }
 
     private fun setAdapter(edit : Boolean) {

@@ -90,7 +90,7 @@ class MessageActivity : Fragment() {
             }
         }
         c.close()
-        msgList.sortByDescending { messageData -> messageData.date }
+        msgList.sortBy { messageData -> messageData.date }
     }
 
     private fun setAdapter(edit : Boolean) {
