@@ -1,6 +1,7 @@
 package com.yyj.frecord
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,7 +39,12 @@ class FCalendarAdapter (private val context : Context, private val list : ArrayL
         private val tvFCalDate : TextView = view.findViewById(R.id.tvFCalDate)
         private val ivFCalScore : ImageView = view.findViewById(R.id.ivFCalScore)
         fun getDate(calData: CalendarData){
-            tvFCalDate.text = calData.date.toString()
+            if (calData.date != null) {
+                tvFCalDate.text = calData.date.toString()
+            }
+            else {
+                tvFCalDate.text = calData.date
+            }
             if (calData.score != null) {
                 ivFCalScore.visibility = View.VISIBLE
                 when (calData.score) {

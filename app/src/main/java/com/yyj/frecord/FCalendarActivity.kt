@@ -8,17 +8,20 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_fcalendar.*
 import kotlinx.android.synthetic.main.activity_record.layoutEdit
 import kotlinx.android.synthetic.main.dialog_unlock.view.*
 import kotlinx.android.synthetic.main.layout_bottom.*
 import kotlinx.android.synthetic.main.layout_edit.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 class FCalendarActivity : Fragment() {
@@ -33,8 +36,10 @@ class FCalendarActivity : Fragment() {
     lateinit var itemLongClickListener: RecordListAdapter.OnItemLongClickListener
     private lateinit var sharedPref : SharedPreferences
     val calDataList = arrayListOf<CalendarData>()
+    val scoreList = arrayListOf<CalendarData>()
+    private val scoreMap = mutableMapOf<Int, CalendarData>()
     val rdList = arrayListOf<RecordData>()
-    val calendar = Calendar.getInstance()
+    private val calendar: Calendar = Calendar.getInstance()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -54,6 +59,7 @@ class FCalendarActivity : Fragment() {
         icMenu2.setImageResource(R.drawable.ic_not_selected_view)
         dbHelper = DBHelper(ctx)
         db = dbHelper.writableDatabase
+        tvMonth.text = (calendar.get(Calendar.MONTH) + 1).toString()
         sharedPref = ctx.getSharedPreferences("setting", Context.MODE_PRIVATE)
         initCal()
         initRecord()
@@ -63,12 +69,27 @@ class FCalendarActivity : Fragment() {
 
     private fun initCal() {
         setCal()
-        itemClickListener = object : RecordListAdapter.OnItemClickListener {
+        dateClickListener = object : FCalendarAdapter.OnItemClickListener {
             override fun onClick(view: View, position: Int) {
-                getSelectedDateRecord(calDataList[position].date)
+                if (calDataList[position].score != null) {
+//                    val idList = arrayOf<String>()
+//                    if (scoreMap.containsKey(calDataList[position].date)) {
+//
+//                    }
+//                    for (i in 0..scoreList.size) {
+//                        if (calDataList[position].date == scoreList[i].date) {
+//                            idList[i] = scoreList[i].id.toString()
+//                        }
+//                    }
+//                    getSelectedDateRecord(idList)
+                }
+                else {
+                    rdList.clear()
+                    recordListAdapter.notifyDataSetChanged()
+                }
             }
         }
-        rvFCalendar.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.VERTICAL, false)
+        rvFCalendar.layoutManager = GridLayoutManager(ctx, 7)
         setCalAdapter()
     }
     private fun initRecord() {
@@ -108,21 +129,58 @@ class FCalendarActivity : Fragment() {
         setRecordAdapter(false)
     }
 
+    @SuppressLint("Range")
     private fun setCal() {
         calDataList.clear()
-        val c : Cursor = db.rawQuery("SELECT DATE FROM ${DBHelper.REC_TABLE}", null)
+        scoreMap.clear()
+        calendar.set(Calendar.DATE, 1)
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        val firstDayOfMonth = calendar.get(Calendar.DAY_OF_WEEK)
+        var date = 1
+        val dateFormat = SimpleDateFormat("yyyy.MM.dd")
+        val c : Cursor = db.rawQuery("SELECT _id, date, score FROM ${DBHelper.REC_TABLE}", null)
         while (c.moveToNext()) {
+            val id = c.getInt(c.getColumnIndex(DBHelper.REC_COL_ID))
+            val recordDate = c.getInt(c.getColumnIndex(DBHelper.REC_COL_DATE)) * 1000L
+            val score = c.getInt(c.getColumnIndex(DBHelper.REC_COL_SCORE))
+            val date = dateFormat.format(recordDate).split(".")
+            if (date[0].toInt() == calendar.get(Calendar.YEAR) && date[1].toInt() == calendar.get(Calendar.MONTH)) {
+                //scoreList.add(CalendarData(id, date[2].toInt(), score))
 
+                if (scoreMap.containsKey(date[2].toInt())) {
+                    //같은 날에 여러개를 썼을 경우 처리
+                }
+                scoreMap[date[2].toInt()] = CalendarData(id, date[2].toInt(), score)
+            }
+        }
+        for (i in 1..(calendar.getActualMaximum(Calendar.DATE) + firstDayOfMonth)) {
+            if (i >= firstDayOfMonth && date <= calendar.getActualMaximum(Calendar.DATE)) {
+//                if (scoreList[scoreListIdx].date == date) {
+//                    calDataList.add(CalendarData(scoreList[scoreListIdx].id, date, scoreList[scoreListIdx].score))
+//                }
+//                else {
+//                    calDataList.add(CalendarData(null, date, null))
+//                }
+//                date++
+//                scoreListIdx++
+                if (scoreMap.containsKey(date)) {
+                    calDataList.add(CalendarData(scoreMap[date]?.id, date, scoreMap[date]?.score))
+                }
+                else {
+                    calDataList.add(CalendarData(null, date, null))
+                }
+                date++
+            }
+            else {
+                calDataList.add(CalendarData(null, null, null))
+            }
         }
     }
 
     @SuppressLint("Range")
-    private fun getSelectedDateRecord(date: Int) {
-        //db select where date = date
-        //date type -> text
-        //setAdapter
+    private fun getSelectedDateRecord(idList: Array<String>) {
         rdList.clear()
-        val c : Cursor = db.rawQuery("SELECT * FROM ${DBHelper.REC_TABLE} WHERE date=$date", null)
+        val c : Cursor = db.query(DBHelper.REC_TABLE, null, "_id=?", idList, null, null, null, null)
         while (c.moveToNext()) {
             val id = c.getInt(c.getColumnIndex(DBHelper.REC_COL_ID))
             val score = c.getInt(c.getColumnIndex(DBHelper.REC_COL_SCORE))
@@ -138,7 +196,8 @@ class FCalendarActivity : Fragment() {
             rdList.add(RecordData(id, score, title, content, date, lock, simple, where, what, feeling, why, false))
         }
         c.close()
-        rdList.sortByDescending { recordData -> recordData.date }
+        rdList.sortBy { recordData -> recordData.date }
+        recordListAdapter.notifyDataSetChanged()
     }
 
     private fun alertDialog(position : Int) {
@@ -199,12 +258,16 @@ class FCalendarActivity : Fragment() {
 
     private fun setButton() {
         btnPrevious.setOnClickListener {
-
-            setCalAdapter()
+            calendar.add(Calendar.MONTH, -1)
+            setCal()
+            calendarAdapter.notifyDataSetChanged()
+            tvMonth.text = (calendar.get(Calendar.MONTH) + 1).toString()
         }
         btnNext.setOnClickListener {
-
-            setCalAdapter()
+            calendar.add(Calendar.MONTH, 1)
+            setCal()
+            calendarAdapter.notifyDataSetChanged()
+            tvMonth.text = (calendar.get(Calendar.MONTH) + 1).toString()
         }
         btnEditDel.setOnClickListener {
             var checked = false
