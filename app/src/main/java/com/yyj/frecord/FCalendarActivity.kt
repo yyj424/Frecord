@@ -36,7 +36,6 @@ class FCalendarActivity : Fragment() {
     lateinit var itemLongClickListener: RecordListAdapter.OnItemLongClickListener
     private lateinit var sharedPref : SharedPreferences
     val calDataList = arrayListOf<CalendarData>()
-    val scoreList = arrayListOf<CalendarData>()
     private val scoreMap = mutableMapOf<Int, CalendarData>()
     val rdList = arrayListOf<RecordData>()
     private val calendar: Calendar = Calendar.getInstance()
@@ -54,6 +53,7 @@ class FCalendarActivity : Fragment() {
         return inflater.inflate(R.layout.activity_fcalendar, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         icMenu3.setImageResource(R.drawable.ic_selected_view)
         icMenu2.setImageResource(R.drawable.ic_not_selected_view)
@@ -70,22 +70,16 @@ class FCalendarActivity : Fragment() {
     private fun initCal() {
         setCal()
         dateClickListener = object : FCalendarAdapter.OnItemClickListener {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onClick(view: View, position: Int) {
                 if (calDataList[position].score != null) {
-//                    val idList = arrayOf<String>()
-//                    if (scoreMap.containsKey(calDataList[position].date)) {
-//
-//                    }
-//                    for (i in 0..scoreList.size) {
-//                        if (calDataList[position].date == scoreList[i].date) {
-//                            idList[i] = scoreList[i].id.toString()
-//                        }
-//                    }
-//                    getSelectedDateRecord(idList)
+                    rvDayRecord.visibility = View.VISIBLE
+                    getSelectedDateRecord(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH) + 1,
+                        calDataList[position].date!!
+                    )
                 }
                 else {
-                    rdList.clear()
-                    recordListAdapter.notifyDataSetChanged()
+                    rvDayRecord.visibility = View.GONE
                 }
             }
         }
@@ -144,27 +138,18 @@ class FCalendarActivity : Fragment() {
             val recordDate = c.getInt(c.getColumnIndex(DBHelper.REC_COL_DATE)) * 1000L
             val score = c.getInt(c.getColumnIndex(DBHelper.REC_COL_SCORE))
             val date = dateFormat.format(recordDate).split(".")
-            if (date[0].toInt() == calendar.get(Calendar.YEAR) && date[1].toInt() == calendar.get(Calendar.MONTH)) {
-                //scoreList.add(CalendarData(id, date[2].toInt(), score))
-
-                if (scoreMap.containsKey(date[2].toInt())) {
-                    //같은 날에 여러개를 썼을 경우 처리
-                }
-                scoreMap[date[2].toInt()] = CalendarData(id, date[2].toInt(), score)
+            if (date[0].toInt() == calendar.get(Calendar.YEAR) && date[1].toInt() == (calendar.get(Calendar.MONTH) + 1)) {
+                scoreMap[id] = CalendarData(id, date[2].toInt(), score)
             }
         }
         for (i in 1..(calendar.getActualMaximum(Calendar.DATE) + firstDayOfMonth)) {
             if (i >= firstDayOfMonth && date <= calendar.getActualMaximum(Calendar.DATE)) {
-//                if (scoreList[scoreListIdx].date == date) {
-//                    calDataList.add(CalendarData(scoreList[scoreListIdx].id, date, scoreList[scoreListIdx].score))
-//                }
-//                else {
-//                    calDataList.add(CalendarData(null, date, null))
-//                }
-//                date++
-//                scoreListIdx++
-                if (scoreMap.containsKey(date)) {
-                    calDataList.add(CalendarData(scoreMap[date]?.id, date, scoreMap[date]?.score))
+                val isScore = scoreMap.filter { (k , v) ->
+                    v.date == date
+                }
+                if (isScore.isNotEmpty()) {
+                    val calData = isScore.values.iterator().next()
+                    calDataList.add(CalendarData(calData.id, date, calData.score))
                 }
                 else {
                     calDataList.add(CalendarData(null, date, null))
@@ -177,25 +162,31 @@ class FCalendarActivity : Fragment() {
         }
     }
 
-    @SuppressLint("Range")
-    private fun getSelectedDateRecord(idList: Array<String>) {
+    @SuppressLint("Range", "NotifyDataSetChanged")
+    private fun getSelectedDateRecord(year: Int, month: Int, day: Int) {
         rdList.clear()
-        val c : Cursor = db.query(DBHelper.REC_TABLE, null, "_id=?", idList, null, null, null, null)
+        val dateFormat = SimpleDateFormat("yyyy.MM.dd")
+        val c : Cursor = db.rawQuery("SELECT * FROM ${DBHelper.REC_TABLE}", null)
         while (c.moveToNext()) {
             val id = c.getInt(c.getColumnIndex(DBHelper.REC_COL_ID))
             val score = c.getInt(c.getColumnIndex(DBHelper.REC_COL_SCORE))
             val title = c.getString(c.getColumnIndex(DBHelper.REC_COL_TITLE))
             val content = c.getString(c.getColumnIndex(DBHelper.REC_COL_CONTENT))
-            val date = c.getInt(c.getColumnIndex(DBHelper.REC_COL_DATE)) * 1000L
+            val recordDate = c.getInt(c.getColumnIndex(DBHelper.REC_COL_DATE)) * 1000L
             val lock = c.getInt(c.getColumnIndex(DBHelper.REC_COL_LOCK))
             val simple = c.getInt(c.getColumnIndex(DBHelper.REC_COL_SIMPLE))
             val where = c.getString(c.getColumnIndex(DBHelper.REC_COL_WHR))
             val what = c.getString(c.getColumnIndex(DBHelper.REC_COL_WHAT))
             val feeling = c.getString(c.getColumnIndex(DBHelper.REC_COL_FEELING))
             val why = c.getString(c.getColumnIndex(DBHelper.REC_COL_WHY))
-            rdList.add(RecordData(id, score, title, content, date, lock, simple, where, what, feeling, why, false))
+
+            val date = dateFormat.format(recordDate).split(".")
+            if (date[0].toInt() == year && date[1].toInt() == month && date[2].toInt() == day) {
+                rdList.add(RecordData(id, score, title, content, recordDate, lock, simple, where, what, feeling, why, false))
+            }
         }
         c.close()
+        Log.d("yyjLog", ""+ rdList)
         rdList.sortBy { recordData -> recordData.date }
         recordListAdapter.notifyDataSetChanged()
     }
@@ -256,6 +247,7 @@ class FCalendarActivity : Fragment() {
         rvDayRecord.adapter = recordListAdapter
     }
 
+    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     private fun setButton() {
         btnPrevious.setOnClickListener {
             calendar.add(Calendar.MONTH, -1)
