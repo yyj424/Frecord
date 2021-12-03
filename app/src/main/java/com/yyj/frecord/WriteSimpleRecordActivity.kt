@@ -185,8 +185,8 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         values.put(DBHelper.REC_COL_SIMPLE, 1)
 
         if (record.id != -1 || inserted) {
-            Log.d("yyjLog", "update")
             if (checkUpdate()) {
+                Log.d("yyjLog", "update")
                 val whereClause = "_id=?"
                 val whereArgs = arrayOf(record.id.toString())
                 db.update(DBHelper.REC_TABLE, values, whereClause, whereArgs)
@@ -198,9 +198,19 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
             inserted = true
             record.score = seekBarInSimple.progress
             record.title = etSimpleRecordTitle.text.toString()
-            record.where = etSimpleRecordWhere.text.toString()
+            if (place != 0) {
+                record.where = place.toString()
+            }
+            else {
+                record.where = "0" + etSimpleRecordWhere.text.toString()
+            }
             record.what = etSimpleRecordWhat.text.toString()
-            record.feeling = etSimpleRecordFeeling.text.toString()
+            if (feeling != 0) {
+                record.feeling = feeling.toString()
+            }
+            else {
+                record.feeling = "0" + etSimpleRecordFeeling.text.toString()
+            }
             record.why = etSimpleRecordWhy.text.toString()
             record.locked = locked
         }
@@ -222,6 +232,7 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         }
         else {
             placeSpinner.setSelection(record.where!!.toInt())
+            place = record.where!!.toInt()
         }
         etSimpleRecordWhat.setText(record.what)
         if (record.feeling!![0] == '0'){
@@ -230,6 +241,7 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
         }
         else {
             feelingSpinner.setSelection(record.feeling!!.toInt())
+            feeling = record.feeling!!.toInt()
         }
         etSimpleRecordWhy.setText(record.why)
     }
@@ -237,9 +249,19 @@ class WriteSimpleRecordActivity : AppCompatActivity() {
     private fun checkUpdate() : Boolean {
         if (record.score != seekBarInSimple.progress) return true
         if (record.title != etSimpleRecordTitle.text.toString()) return true
-        if (record.where != etSimpleRecordWhere.text.toString()) return true
+        if (place != 0) {
+            if (record.where != place.toString()) return true
+        }
+        else {
+            if (record.where != "0" + etSimpleRecordWhere.text.toString()) return true
+        }
         if (record.what != etSimpleRecordWhat.text.toString()) return true
-        if (record.feeling != etSimpleRecordFeeling.text.toString()) return true
+        if (feeling != 0) {
+            if (record.feeling != feeling.toString()) return true
+        }
+        else {
+            if (record.feeling != "0" + etSimpleRecordFeeling.text.toString()) return true
+        }
         if (record.why != etSimpleRecordWhy.text.toString()) return true
         if (record.locked != locked) return true
         return false
