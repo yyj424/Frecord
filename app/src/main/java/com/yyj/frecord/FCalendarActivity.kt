@@ -39,6 +39,7 @@ class FCalendarActivity : Fragment() {
     private val scoreMap = mutableMapOf<Int, CalendarData>()
     val rdList = arrayListOf<RecordData>()
     private val calendar: Calendar = Calendar.getInstance()
+    lateinit var selectedDate : String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -73,13 +74,15 @@ class FCalendarActivity : Fragment() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onClick(view: View, position: Int) {
                 if (calDataList[position].score != null) {
+                    tvNoRecord.visibility = View.GONE
                     rvDayRecord.visibility = View.VISIBLE
                     getSelectedDateRecord(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH) + 1,
                         calDataList[position].date!!
                     )
                 }
                 else {
-                    rvDayRecord.visibility = View.GONE
+                    tvNoRecord.visibility = View.VISIBLE
+                    rvDayRecord.visibility = View.INVISIBLE
                 }
             }
         }
@@ -140,6 +143,7 @@ class FCalendarActivity : Fragment() {
             val date = dateFormat.format(recordDate).split(".")
             if (date[0].toInt() == calendar.get(Calendar.YEAR) && date[1].toInt() == (calendar.get(Calendar.MONTH) + 1)) {
                 scoreMap[id] = CalendarData(id, date[2].toInt(), score)
+                Log.d("yyjLog", "scor " + score + "date " + date[0] + date[1] + date[2])
             }
         }
         for (i in 1..(calendar.getActualMaximum(Calendar.DATE) + firstDayOfMonth)) {
@@ -163,7 +167,8 @@ class FCalendarActivity : Fragment() {
     }
 
     @SuppressLint("Range", "NotifyDataSetChanged")
-    private fun getSelectedDateRecord(year: Int, month: Int, day: Int) {
+    fun getSelectedDateRecord(year: Int, month: Int, day: Int) {
+        selectedDate = "$year.$month.$day"
         rdList.clear()
         val dateFormat = SimpleDateFormat("yyyy.MM.dd")
         val c : Cursor = db.rawQuery("SELECT * FROM ${DBHelper.REC_TABLE}", null)
@@ -186,8 +191,7 @@ class FCalendarActivity : Fragment() {
             }
         }
         c.close()
-        Log.d("yyjLog", ""+ rdList)
-        rdList.sortBy { recordData -> recordData.date }
+        rdList.sortByDescending { recordData -> recordData.date }
         recordListAdapter.notifyDataSetChanged()
     }
 
