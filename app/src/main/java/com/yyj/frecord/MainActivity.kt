@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import kotlinx.android.synthetic.main.activity_fcalendar.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.android.synthetic.main.activity_record.*
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         val messageFragment = supportFragmentManager.findFragmentByTag("f0")
         val recordFragment = supportFragmentManager.findFragmentByTag("f1")
+        val calendarFragment = supportFragmentManager.findFragmentByTag("f2")
         if (recordFragment != null) {
             recordFragment as RecordActivity
             recordFragment.setListData()
@@ -50,6 +52,13 @@ class MainActivity : AppCompatActivity() {
             }
             else {
                 messageFragment.tvMsgExplain.visibility = View.VISIBLE
+            }
+        }
+        if (calendarFragment != null) {
+            calendarFragment as FCalendarActivity
+            if (calendarFragment.rvDayRecord.visibility == View.VISIBLE) {
+                val date = calendarFragment.selectedDate.split(".")
+                calendarFragment.getSelectedDateRecord(date[0].toInt(), date[1].toInt(), date[2].toInt())
             }
         }
         if (name != sharedPref.getString("name", null).toString()) {
