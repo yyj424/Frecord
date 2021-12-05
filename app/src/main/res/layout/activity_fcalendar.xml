@@ -19,28 +19,32 @@
 
         <ImageButton
             android:id="@+id/btnPrevious"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
+            android:layout_weight="1.5"
+            android:background="@null"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:srcCompat="@drawable/ic_previous" />
 
         <TextView
             android:id="@+id/tvMonth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout_weight="3"
+            android:layout_weight="1"
             android:fontFamily="@font/pretendard_bold"
             android:gravity="center"
             android:textSize="18sp" />
 
         <ImageButton
             android:id="@+id/btnNext"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
+            android:layout_weight="1.5"
+            android:background="@null"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             app:srcCompat="@drawable/ic_next" />
     </LinearLayout>
 
@@ -59,7 +63,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
         android:orientation="vertical"
@@ -72,7 +76,7 @@
             android:id="@+id/rvFCalendar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="5dp"
             app:spanCount="7">
 
         </androidx.recyclerview.widget.RecyclerView>

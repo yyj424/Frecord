@@ -213,7 +213,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:text="메시지 수신을 위해서 앱 알림을 허용해 주세요"
+                android:text="메시지 수신을 위해서 앱 알림을 허용해 주시고,"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/textView53"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="절전 대상이 아닌 앱에 추가해주세요"
                 android:textSize="17sp" />
 
             <TextView
