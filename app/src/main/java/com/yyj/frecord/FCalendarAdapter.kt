@@ -39,21 +39,22 @@ class FCalendarAdapter (private val context : Context, private val list : ArrayL
         private val tvFCalDate : TextView = view.findViewById(R.id.tvFCalDate)
         private val ivFCalScore : ImageView = view.findViewById(R.id.ivFCalScore)
         fun getDate(calData: CalendarData){
+            ivFCalScore.visibility = View.INVISIBLE
             if (calData.date != null) {
                 tvFCalDate.text = calData.date.toString()
+                if (calData.score != null) {
+                    ivFCalScore.visibility = View.VISIBLE
+                    when (calData.score) {
+                        0 -> ivFCalScore.setImageResource(R.drawable.ic_thumb0)
+                        1 -> ivFCalScore.setImageResource(R.drawable.ic_thumb1)
+                        2 -> ivFCalScore.setImageResource(R.drawable.ic_thumb2)
+                        3 -> ivFCalScore.setImageResource(R.drawable.ic_thumb3)
+                        4 -> ivFCalScore.setImageResource(R.drawable.ic_thumb4)
+                    }
+                }
             }
             else {
                 tvFCalDate.text = calData.date
-            }
-            if (calData.score != null) {
-                ivFCalScore.visibility = View.VISIBLE
-                when (calData.score) {
-                    0 -> ivFCalScore.setImageResource(R.drawable.ic_thumb0)
-                    1 -> ivFCalScore.setImageResource(R.drawable.ic_thumb1)
-                    2 -> ivFCalScore.setImageResource(R.drawable.ic_thumb2)
-                    3 -> ivFCalScore.setImageResource(R.drawable.ic_thumb3)
-                    4 -> ivFCalScore.setImageResource(R.drawable.ic_thumb4)
-                }
             }
         }
     }
