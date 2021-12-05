@@ -65,6 +65,7 @@ class RecordListAdapter (private val context : Context, private val list : Array
             if (!TextUtils.isEmpty(recordData.title?.trim())) {
                 tvTitle.text = recordData.title
                 tvDate.text = dateFormat.format(recordData.date)
+                tvDate.visibility = View.VISIBLE
             }
             else {
                 tvTitle.text = dateFormat.format(recordData.date)
