@@ -24,14 +24,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".WriteRecordActivity"/>
         <activity android:name=".AddMessageActivity"/>
         <activity android:name=".MessageBoxActivity"/>
         <activity android:name=".WriteSimpleRecordActivity"/>
-        <activity android:name=".SettingActivity"/>
+        <activity android:name=".SettingActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".HelpActivity"/>
-        <activity android:name=".PasswordSettingActivity"/>
+        <activity android:name=".PasswordSettingActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".DefaultSettingActivity"/>
         <activity android:name=".LicenseActivity"/>
     </application>

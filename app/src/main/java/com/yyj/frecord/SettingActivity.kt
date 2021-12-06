@@ -6,6 +6,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.dialog_unlock.*
 import kotlinx.android.synthetic.main.dialog_unlock.view.*
@@ -37,6 +39,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                         .setCancelable(false)
                         .create()
                     dialog.show()
+                    dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
                     view.btnUnlockCancel.setOnClickListener {
                         dialog.dismiss()
                     }

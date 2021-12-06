@@ -5,8 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_password.*
+import kotlinx.android.synthetic.main.dialog_unlock.view.*
 
 class PasswordSettingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +17,7 @@ class PasswordSettingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_password)
 
         val sharedPref = this.getSharedPreferences("setting", Context.MODE_PRIVATE)
-
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         btnSavePassword.setOnClickListener {
             if (!TextUtils.isEmpty(etPassword.text.toString().trim()) && !TextUtils.isEmpty(etConfirmPassword.text.toString().trim()) && !TextUtils.isEmpty(etPwHint.text.toString().trim()))
             {
