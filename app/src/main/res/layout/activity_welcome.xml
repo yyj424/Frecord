@@ -51,7 +51,9 @@
                 android:inputType="textPersonName"
                 android:maxLength="10"
                 android:padding="5dp"
-                android:textSize="18sp" />
+                android:textSize="18sp">
+                <requestFocus/>
+            </EditText>
 
             <ImageButton
                 android:id="@+id/btnConfirmUserName"

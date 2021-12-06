@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_welcome.*
 
@@ -19,6 +20,7 @@ class WelcomeActivity : AppCompatActivity() {
             finish()
         }
 
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         btnConfirmUserName.setOnClickListener {
             if (!TextUtils.isEmpty(etUserName.text.toString().trim()))
             {
