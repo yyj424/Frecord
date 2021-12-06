@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_fcalendar.*
+import kotlinx.android.synthetic.main.activity_record.*
 import kotlinx.android.synthetic.main.activity_record.layoutEdit
 import kotlinx.android.synthetic.main.dialog_unlock.view.*
 import kotlinx.android.synthetic.main.layout_bottom.*
@@ -40,6 +41,7 @@ class FCalendarActivity : Fragment() {
     val rdList = arrayListOf<RecordData>()
     private val calendar: Calendar = Calendar.getInstance()
     lateinit var selectedDate : String
+    var edited = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -127,7 +129,7 @@ class FCalendarActivity : Fragment() {
     }
 
     @SuppressLint("Range")
-    private fun setCal() {
+    fun setCal() {
         calDataList.clear()
         scoreMap.clear()
         calendar.set(Calendar.DATE, 1)
@@ -143,7 +145,6 @@ class FCalendarActivity : Fragment() {
             val date = dateFormat.format(recordDate).split(".")
             if (date[0].toInt() == calendar.get(Calendar.YEAR) && date[1].toInt() == (calendar.get(Calendar.MONTH) + 1)) {
                 scoreMap[id] = CalendarData(id, date[2].toInt(), score)
-                Log.d("yyjLog", "scor " + score + "date " + date[0] + date[1] + date[2])
             }
         }
         for (i in 1..(calendar.getActualMaximum(Calendar.DATE) + firstDayOfMonth)) {
@@ -278,6 +279,9 @@ class FCalendarActivity : Fragment() {
             }
             if (checked) {
                 setRecordAdapter(false)
+                setCal()
+                calendarAdapter.notifyDataSetChanged()
+                edited = true
             }
         }
         btnEditLock.setOnClickListener {
@@ -301,6 +305,7 @@ class FCalendarActivity : Fragment() {
                 }
                 if (checked) {
                     setRecordAdapter(false)
+                    edited = true
                 }
             }
         }

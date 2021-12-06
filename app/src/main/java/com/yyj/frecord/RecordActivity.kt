@@ -35,6 +35,7 @@ class RecordActivity : Fragment() {
     lateinit var itemLongClickListener: RecordListAdapter.OnItemLongClickListener
     private lateinit var sharedPref : SharedPreferences
     val rdList = arrayListOf<RecordData>()
+    var edited = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -200,6 +201,7 @@ class RecordActivity : Fragment() {
             }
             if (checked) {
                 setAdapter(false)
+                edited = true
             }
         }
         btnEditLock.setOnClickListener {
@@ -223,6 +225,7 @@ class RecordActivity : Fragment() {
                 }
                 if (checked) {
                     setAdapter(false)
+                    edited = true
                 }
             }
         }
