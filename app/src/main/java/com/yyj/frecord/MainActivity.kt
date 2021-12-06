@@ -106,19 +106,4 @@ class MainActivity : AppCompatActivity() {
             messageFragment?.tvToUserName?.text = name
         }
     }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateRecordList() {
-        val recordFragment = supportFragmentManager.findFragmentByTag("f1")
-        Log.d("yyjLog", "update " + recordFragment)
-//        val recordFragment = supportFragmentManager.findFragmentByTag("f1") as RecordActivity
-//        recordFragment.setListData()
-//        recordFragment.recordListAdapter.notifyDataSetChanged()
-//        if (recordFragment.rdList.size > 0) {
-//            recordFragment.llExplain.visibility = View.INVISIBLE
-//        }
-//        else {
-//            recordFragment.llExplain.visibility = View.VISIBLE
-//        }
-    }
 }
