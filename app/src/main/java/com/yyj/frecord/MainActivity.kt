@@ -28,12 +28,12 @@ class MainActivity : AppCompatActivity() {
         sharedPref = this.getSharedPreferences("setting", Context.MODE_PRIVATE)
         name = sharedPref.getString("name", null).toString()
         var prevPos = 1
-        val recordFragment = supportFragmentManager.findFragmentByTag("f1")
-        val calendarFragment = supportFragmentManager.findFragmentByTag("f2")
         val callback = object : ViewPager2.OnPageChangeCallback() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
+                val recordFragment = supportFragmentManager.findFragmentByTag("f1")
+                val calendarFragment = supportFragmentManager.findFragmentByTag("f2")
                 if (recordFragment != null && calendarFragment != null) {
                     recordFragment as RecordActivity
                     calendarFragment as FCalendarActivity
