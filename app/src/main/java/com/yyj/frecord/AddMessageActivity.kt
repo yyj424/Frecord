@@ -123,14 +123,13 @@ class AddMessageActivity : AppCompatActivity() {
     }
 
     private fun setAlarm(message: String, req: Int) {
-        val alarmManager =
-                this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-            intent = Intent(this, AlarmReceiver::class.java).let { intent ->
-                intent.putExtra("channelId", channelId)
-                intent.putExtra("message", message)
-                PendingIntent.getBroadcast(this, req, intent, FLAG_UPDATE_CURRENT)//flag를 id로
-            }
+        val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        intent = Intent(this, AlarmReceiver::class.java).let { intent ->
+            intent.putExtra("channelId", channelId)
+            intent.putExtra("message", message)
+            intent.putExtra("notificationId", req)
+            PendingIntent.getBroadcast(this, req, intent, 0) //flag 확인
+        }
         alarmManager.set(
             AlarmManager.RTC_WAKEUP,
             alarmCalendar.timeInMillis,
