@@ -24,7 +24,6 @@ import java.util.*
 class AddMessageActivity : AppCompatActivity() {
     private lateinit var dbHelper : DBHelper
     private lateinit var db : SQLiteDatabase
-    private val channelId = "msg"
     private lateinit var dialog : AlertDialog
     private lateinit var intent : PendingIntent
     private val alarmCalendar = Calendar.getInstance()
@@ -44,7 +43,6 @@ class AddMessageActivity : AppCompatActivity() {
         tvSendMsgUserName.text = userName
         setAlertCalendar()
         setCheckBox()
-        createNotificationChannel()
 
         llSendMsgDate.setOnClickListener {
             dialog.show()
@@ -125,25 +123,25 @@ class AddMessageActivity : AppCompatActivity() {
     private fun setAlarm(message: String, req: Int) {
         val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         intent = Intent(this, AlarmReceiver::class.java).let { intent ->
-            intent.putExtra("channelId", channelId)
             intent.putExtra("message", message)
-            intent.putExtra("notificationId", req)
+            intent.putExtra("id", req)
             PendingIntent.getBroadcast(this, req, intent, 0) //flag 확인
         }
         alarmManager.set(
             AlarmManager.RTC_WAKEUP,
             alarmCalendar.timeInMillis,
             intent)
+        createNotificationChannel(req.toString())
     }
 
-    private fun createNotificationChannel() {
+    private fun createNotificationChannel(id: String) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(channelId, name, importance).apply {
+            val channel = NotificationChannel(id, name, importance).apply {
                 description = descriptionText
             }
             // Register the channel with the system

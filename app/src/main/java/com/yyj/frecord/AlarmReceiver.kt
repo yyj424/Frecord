@@ -11,15 +11,14 @@ import androidx.core.app.NotificationManagerCompat
 class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, getIntent: Intent) {
         val message = getIntent.getStringExtra("message")
-        val channelId = getIntent.getStringExtra("channelId")
-        val notificationId = getIntent.getIntExtra("notificationId", 0)
+        val id = getIntent.getIntExtra("id", 0)
 
         val intent = Intent(context, MessageBoxActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
-        val builder = NotificationCompat.Builder(context, channelId!!)
+        val builder = NotificationCompat.Builder(context, id.toString())
             .setSmallIcon(R.drawable.ic_msg)
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
@@ -28,7 +27,7 @@ class AlarmReceiver: BroadcastReceiver() {
             .setAutoCancel(true)
 
         with(NotificationManagerCompat.from(context)) {
-            notify(notificationId, builder.build())
+            notify(id, builder.build())
         }
     }
 }
