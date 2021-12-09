@@ -123,6 +123,7 @@ class AddMessageActivity : AppCompatActivity() {
     private fun setAlarm(message: String, req: Int) {
         val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         intent = Intent(this, AlarmReceiver::class.java).let { intent ->
+            intent.putExtra("channelId", getString(R.string.channel_id))
             intent.putExtra("message", message)
             intent.putExtra("id", req)
             PendingIntent.getBroadcast(this, req, intent, 0) //flag 확인
@@ -131,24 +132,6 @@ class AddMessageActivity : AppCompatActivity() {
             AlarmManager.RTC_WAKEUP,
             alarmCalendar.timeInMillis,
             intent)
-        createNotificationChannel(req.toString())
-    }
-
-    private fun createNotificationChannel(id: String) {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(id, name, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
     }
 
     private fun setSendMsg(name: String, rand: Boolean): String {
