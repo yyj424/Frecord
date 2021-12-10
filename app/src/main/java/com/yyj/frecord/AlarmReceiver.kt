@@ -9,7 +9,6 @@ import androidx.core.app.NotificationManagerCompat
 
 class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, getIntent: Intent) {
-        val channelId = getIntent.getStringExtra("channelId")
         val message = getIntent.getStringExtra("message")
         val id = getIntent.getIntExtra("id", 0)
 
@@ -18,7 +17,7 @@ class AlarmReceiver: BroadcastReceiver() {
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
-        val builder = NotificationCompat.Builder(context, channelId!!)
+        val builder = NotificationCompat.Builder(context, id.toString())
             .setSmallIcon(R.drawable.ic_msg)
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))

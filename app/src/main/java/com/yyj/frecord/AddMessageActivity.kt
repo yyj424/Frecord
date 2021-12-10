@@ -1,7 +1,7 @@
 package com.yyj.frecord
 
+import android.annotation.SuppressLint
 import android.app.*
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -9,13 +9,11 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_add_message.*
-import kotlinx.android.synthetic.main.activity_add_record.*
 import kotlinx.android.synthetic.main.dialog_datepicker.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -123,7 +121,6 @@ class AddMessageActivity : AppCompatActivity() {
     private fun setAlarm(message: String, req: Int) {
         val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         intent = Intent(this, AlarmReceiver::class.java).let { intent ->
-            intent.putExtra("channelId", getString(R.string.channel_id))
             intent.putExtra("message", message)
             intent.putExtra("id", req)
             PendingIntent.getBroadcast(this, req, intent, 0) //flag 확인
@@ -132,6 +129,23 @@ class AddMessageActivity : AppCompatActivity() {
             AlarmManager.RTC_WAKEUP,
             alarmCalendar.timeInMillis,
             intent)
+        createNotificationChannel(req.toString())
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun createNotificationChannel(id: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val dateFormat = SimpleDateFormat("yyyy. MM. dd.  HH:mm")
+            val name = dateFormat.format(alarmCalendar.timeInMillis)
+            val descriptionText = "메시지"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(id, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun setSendMsg(name: String, rand: Boolean): String {

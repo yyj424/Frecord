@@ -1,9 +1,13 @@
 package com.yyj.frecord
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
@@ -66,11 +70,22 @@ class MessageBoxActivity : AppCompatActivity() {
                 val id = c.getInt(c.getColumnIndex(DBHelper.MSG_COL_ID))
                 val content = c.getString(c.getColumnIndex(DBHelper.MSG_COL_CONTENT))
                 msgList.add(MessageData(id, date, content, null, false))
+                val req = c.getInt(c.getColumnIndex(DBHelper.MSG_COL_REQ))
+                delNotificationChannel(req.toString())
             }
         }
         c.close()
         msgList.sortBy { messageData -> messageData.date }
         rvMsgBox.scrollToPosition(msgList.size - 1)
+    }
+
+    private fun delNotificationChannel(id: String) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (notificationManager.getNotificationChannel(id) != null) {
+                notificationManager.deleteNotificationChannel(id)
+            }
+        }
     }
 
     private fun setAdapter(edit : Boolean) {
